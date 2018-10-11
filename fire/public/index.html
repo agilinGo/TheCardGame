@@ -44,29 +44,68 @@ phina.define('MainScene', {
   
   init: function() {
     this.superInit();
-    
-    var pos = firebase.database().ref("/pos/");
+
+    var ID = Math.round(Math.random()*1000000);
+    firebase.database().ref("/users").push({id:ID});
     
     var label = phina.display.Label({text:"★をドラッグで動かせます"});
     label.addChildTo(this);
     label.setPosition(320, 160);
 
-    var shape = phina.display.StarShape();
-    shape.addChildTo(this);
-    shape.setScale(2);
-    shape.setPosition(320,450);
+    let pos1 = firebase.database().ref("/c1/");
+    var shape1 = phina.display.RectangleShape();
+    shape1.addChildTo(this);
+    shape1.setScale(2);
+    shape1.setPosition(320,450);
+    
+    let pos2 = firebase.database().ref("/c2/");
+    var shape2 = phina.display.RectangleShape();
+    shape2.addChildTo(this);
+    shape2.setScale(2);
+    shape2.setPosition(320,10);
 
-    pos.on("value", function(snapshot) { 
-        shape.setPosition(snapshot.val().x,snapshot.val().y);
+    pos1.on("value", function(snapshot) { 
+        shape1.setPosition(snapshot.val().x,snapshot.val().y);
+    });
+    
+    pos2.on("value", function(snapshot) { 
+        shape2.setPosition(snapshot.val().x,snapshot.val().y);
     });
     
     //Shapeをドラッグで動かす
-    shape.setInteractive(true);
-    shape.on('pointmove', function(e) {
+    shape1.setInteractive(true);
+    shape1.on('pointmove', function(e) {
       this.x += e.pointer.dx;
       this.y += e.pointer.dy;
-      pos.set({x:this.x, y:this.y});
+      pos1.set({x:this.x, y:this.y});
     });
+    
+    //Shapeをドラッグで動かす
+    shape2.setInteractive(true);
+    shape2.on('pointmove', function(e) {
+      this.x += e.pointer.dx;
+      this.y += e.pointer.dy;
+      pos2.set({x:this.x, y:this.y});
+    });
+    
+    phina.define('Card', {
+  // 初期化
+  init: function(obj) {
+      // クラスメンバ
+      var card = obj;
+      var id;
+      card.x = 320;
+      card.y = 720;
+      card.scaleX = 2;
+      card.scaleY = 3;
+      card.setInteractive(true);
+      card.on('pointmove', function(e) {
+      card.x += e.pointer.dx;
+      card.y += e.pointer.dy;
+  });
+  },
+});
+    
   },
 });
 
