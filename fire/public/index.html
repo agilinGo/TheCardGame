@@ -39,33 +39,6 @@
     <!-- メイン処理 -->
 <script>
 
-firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
-  .then(function() {
-  })
-  .catch(function(error) {
-    // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-  });
-
-firebase.auth().signInAnonymously().catch(function(error) {
-  // Handle Errors here.
-  var errorCode = error.code;
-  var errorMessage = error.message;
-});
-
-firebase.auth().onAuthStateChanged(function(user) {
-  if (user) {
-    // User is signed in.
-    var isAnonymous = user.isAnonymous;
-    var uid = user.uid;
-    firebase.database().ref("/user/").push({"uid":uid});
-  } else {
-    // User is signed out.
-    firebase.auth().signOut();
-  }
-});
-
 phina.define('MainScene', {
   superClass: 'phina.display.DisplayScene',
   
