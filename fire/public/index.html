@@ -1,0 +1,85 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <title>Getting started | phina.js</title>
+    
+<!-- Firebase App is always required and must be first -->
+<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-app.js"></script>
+
+<!-- Add additional services that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-messaging.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-functions.js"></script>
+
+    
+<script src="https://www.gstatic.com/firebasejs/5.5.3/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDSe48M9BONGH-WbMJtwdDf2zbkW_aFeaM",
+    authDomain: "thecardgame-30148.firebaseapp.com",
+    databaseURL: "https://thecardgame-30148.firebaseio.com",
+    projectId: "thecardgame-30148",
+    storageBucket: "thecardgame-30148.appspot.com",
+    messagingSenderId: "587236212051"
+  };
+  firebase.initializeApp(config);
+</script>
+    
+    <!-- phina.js を読み込む -->
+    <script src='./phina.js'></script>
+
+    <!-- メイン処理 -->
+<script>
+
+phina.define('MainScene', {
+  superClass: 'phina.display.DisplayScene',
+  
+  init: function() {
+    this.superInit();
+    
+    var pos = firebase.database().ref("/pos/");
+    
+    var label = phina.display.Label({text:"★をドラッグで動かせます"});
+    label.addChildTo(this);
+    label.setPosition(320, 160);
+
+    var shape = phina.display.StarShape();
+    shape.addChildTo(this);
+    shape.setScale(2);
+    shape.setPosition(320,450);
+
+    pos.on("value", function(snapshot) { 
+        shape.setPosition(snapshot.val().x,snapshot.val().y);
+    });
+    
+    //Shapeをドラッグで動かす
+    shape.setInteractive(true);
+    shape.on('pointmove', function(e) {
+      this.x += e.pointer.dx;
+      this.y += e.pointer.dy;
+      pos.set({x:this.x, y:this.y});
+    });
+  },
+});
+
+
+phina.main(function() {
+  var app = phina.game.GameApp({
+    startLabel: 'main',
+  });
+  app.run();
+});
+</script>
+  </head>
+  <body>
+
+  </body>
+</html>
