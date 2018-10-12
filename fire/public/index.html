@@ -2,100 +2,42 @@
 
 <html>
 <head>
-<meta charset='utf-8' />
-<meta name="viewport" content="width=device-width, user-scalable=no" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-
-<title>Getting started | phina.js</title>
-
-<!-- Firebase App is always required and must be first -->
-<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-app.js"></script>
-
-<!-- Add additional services that you want to use -->
-<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-messaging.js"></script>
-<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-functions.js"></script>
-
-
-<script src="https://www.gstatic.com/firebasejs/5.5.3/firebase.js"></script>
-<script>
-// Initialize Firebase
-var config = {
-    apiKey: "AIzaSyDSe48M9BONGH-WbMJtwdDf2zbkW_aFeaM",
-    authDomain: "thecardgame-30148.firebaseapp.com",
-    databaseURL: "https://thecardgame-30148.firebaseio.com",
-    projectId: "thecardgame-30148",
-    storageBucket: "thecardgame-30148.appspot.com",
-    messagingSenderId: "587236212051"
-};
-firebase.initializeApp(config);
-</script>
-
-<!-- phina.js を読み込む -->
-<script src='./phina.js'></script>
-
-<!-- メイン処理 -->
-<script>
-
-phina.define('MainScene', {
-    superClass: 'phina.display.DisplayScene',
+    <meta charset='utf-8' />
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     
-    init: function() {
-        this.superInit();
-        
-        var ID = Math.round(Math.random()*1000000);
-        firebase.database().ref("/users").push({id:ID});
-        
-        var label = phina.display.Label({text:"カードをドラッグで動かせます"});
-        label.addChildTo(this);
-        label.setPosition(320, 160);
-        
-        let pos1 = firebase.database().ref("/c1/");
-        var shape1 = phina.display.RectangleShape();
-        shape1.addChildTo(this);
-        var card1 = Card(shape1, pos1);
-        
-        let pos2 = firebase.database().ref("/c2/");
-        var shape2 = phina.display.RectangleShape();
-        shape2.addChildTo(this);
-        var card2 = Card(shape2, pos2);
-        
-    },
-});
-
-phina.define('Card', {
-    // 初期化
-    init: function(obj,ref) {
-        // クラスメンバ
-        var card = obj;
-        var pos = ref;
-        var id;
-        card.setPosition(100,100);
-        card.setScale(2,3);
-        card.setInteractive(true);
-        card.on('pointmove', function(e) {
-            card.x += e.pointer.dx;
-            card.y += e.pointer.dy;
-            pos.set({x:this.x, y:this.y});
-        });
-        pos.on("value", function(snapshot) { 
-            card.setPosition(snapshot.val().x,snapshot.val().y);
-        });
-    },
-});
-
-phina.main(function() {
-    var app = phina.game.GameApp({
-        startLabel: 'main',
-    });
-    app.run();
-});
-</script>
+    <title>TheCarGame</title>
+    
+    <!-- firebase を読み込む -->
+    <!-- Firebase App is always required and must be first -->
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-app.js"></script>
+    <!-- Add additional services that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-messaging.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-functions.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.3/firebase.js"></script>
+    <script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyDSe48M9BONGH-WbMJtwdDf2zbkW_aFeaM",
+        authDomain: "thecardgame-30148.firebaseapp.com",
+        databaseURL: "https://thecardgame-30148.firebaseio.com",
+        projectId: "thecardgame-30148",
+        storageBucket: "thecardgame-30148.appspot.com",
+        messagingSenderId: "587236212051"
+    };
+    firebase.initializeApp(config);
+    </script>
+    
+    <!-- phina.js を読み込む -->
+    <script src='./phina.js'></script>
 </head>
 
 <body>
-
+    <!-- メイン処理 -->
+    <script src="main.js"></script>
 </body>
+
 </html>
