@@ -11,12 +11,12 @@ phina.define('MainScene', {
         label.addChildTo(this);
         label.setPosition(320, 160);
         
-        let pos1 = firebase.database().ref("/c1/");
+        let pos1 = firebase.database().ref("/pos/c1/");
         var shape1 = phina.display.RectangleShape();
         shape1.addChildTo(this);
         var card1 = Card(shape1, pos1);
         
-        let pos2 = firebase.database().ref("/c2/");
+        let pos2 = firebase.database().ref("/pos/c2/");
         var shape2 = phina.display.RectangleShape();
         shape2.addChildTo(this);
         var card2 = Card(shape2, pos2);
