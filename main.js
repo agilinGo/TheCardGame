@@ -1,6 +1,13 @@
 // phina.js をグローバル領域に展開
 phina.globalize();
 
+var ASSETS = {
+  image: {
+    'Tramp': 'Tramp/bk0.png',
+  },
+};
+
+
 // MainScene クラスを定義
 phina.define('MainScene', {
   superClass: 'CanvasScene',
@@ -8,7 +15,7 @@ phina.define('MainScene', {
     this.superInit();
     this.backgroundColor = '#999';
     var player = Player("player1");
-    var rect = RectangleShape().addChildTo(this);
+    var rect = Sprite('Tramp').addChildTo(this);
     var Card1 = Card(rect);
     //Card1.card.addChildTo(this);
     player.my_Card.push = Card1;    
@@ -30,8 +37,8 @@ phina.define('Card', {
       var card = obj;
       card.x = 320;
       card.y = 720;
-      card.scaleX = 2;
-      card.scaleY = 3;
+      //card.scaleX = 2;
+      //card.scaleY = 3;
       card.setInteractive(true);
       card.on('pointmove', function(e) {
       card.x += e.pointer.dx;
@@ -44,6 +51,7 @@ phina.main(function() {
   // アプリケーション生成
   var app = GameApp({
     startLabel: 'main', // メインシーンから開始する
+    assets: ASSETS,
   });
   // アプリケーション実行
   app.run();
