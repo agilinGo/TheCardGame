@@ -14,17 +14,70 @@ phina.define('MainScene', {
         label.setPosition(320, 160);
         // データベースからカード生成
         var group = DisplayElement().addChildTo(this);
-        firebase.database().ref("/pos/").on("child_added", function(snapshot) { 
-            var shape = phina.display.RectangleShape();
-            shape.addChildTo(group);
-            card = Card(shape, snapshot);
+//        firebase.database().ref("/pos/").on("child_added", function(snapshot) { 
+//            var shape = phina.display.RectangleShape();
+//            shape.addChildTo(group);
+//            card = Card(shape, snapshot);
+//        });
+
+        var pos1 = firebase.database().ref("/pos/c1/");
+        var shape1 = phina.display.RectangleShape();
+        shape1.addChildTo(group);
+        shape1.setScale(2,3);
+        shape1.setInteractive(true);
+        shape1.on('pointmove', function(e) {
+            shape1.x += e.pointer.dx;
+            shape1.y += e.pointer.dy;
+            pos1.set({x:this.x, y:this.y});
         });
+        //データベース書き換えた時
+        pos1.on("value", function(snapshot) { 
+            shape1.setPosition(snapshot.val().x,snapshot.val().y);
+        });
+        
+        var pos2 = firebase.database().ref("/pos/c2/");
+        var shape2 = phina.display.RectangleShape();
+        shape2.addChildTo(group);
+        shape2.setScale(2,3);
+        shape2.setInteractive(true);
+        shape2.on('pointmove', function(e) {
+            shape2.x += e.pointer.dx;
+            shape2.y += e.pointer.dy;
+            pos2.set({x:this.x, y:this.y});
+        });
+        //データベース書き換えた時
+        pos2.on("value", function(snapshot) { 
+            shape2.setPosition(snapshot.val().x,snapshot.val().y);
+        });
+        
+        this.group = group;
+        this.update = function() {
+           this.setRectInteraction();
+        };
+        
+        
         console.log(this.children);
         //ウィンドウ消した時
         window.onbeforeunload = function(){
             user.remove();
         }
     },
+    setRectInteraction: function() {
+        // 全体を一旦タッチ可能にする
+        this.group.children.each(function(rect) {
+            rect.setInteractive(true);
+        }); 
+        var self = this;
+        // グループ総当たりで重なり具合に応じてタッチ可否を設定する
+        this.group.children.each(function(rect, i) {
+            self.group.children.each(function(target, j) {
+                // 重なっていて表示順が下のターゲットはタッチ不可にする
+                if (Collision.testRectRect(rect, target) && j < i) {
+                    target.setInteractive(false);
+                }
+            });
+        });
+    }
 });
 
 phina.define('Card', {
