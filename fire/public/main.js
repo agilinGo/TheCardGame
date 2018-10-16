@@ -28,31 +28,42 @@ phina.define('MainScene', {
         
         var pos1 = firebase.database().ref("/pos/c1/");
         var shape1 = phina.display.RectangleShape();
+        var id1;
         shape1.addChildTo(group);
         //shape1.setScale(2,2);
         shape1.setInteractive(true);
         shape1.on('pointmove', function(e) {
         shape1.x += e.pointer.dx;
             shape1.y += e.pointer.dy;
-            pos1.set({x:this.x, y:this.y});
+            pos1.set({belong:ID, x:this.x, y:this.y});
         });
         //データベース書き換えた時
         pos1.on("value", function(snapshot) { 
+            id1 = snapshot.val().belong;
             shape1.setPosition(snapshot.val().x,snapshot.val().y);
+            console.log(id1);
+            console.log(ID);
+            if (id1 == 0 || id1 ==ID) {
+                shape1.show();
+            }else{
+                shape1.hide();
+            }
         });
         
         var pos2 = firebase.database().ref("/pos/c2/");
         var shape2 = phina.display.RectangleShape();
+        var id2;
         shape2.addChildTo(group);
         //shape2.setScale(2,2);
         shape2.setInteractive(true);
         shape2.on('pointmove', function(e) {
             shape2.x += e.pointer.dx;
             shape2.y += e.pointer.dy;
-            pos2.set({x:this.x, y:this.y});
+            pos2.set({belong:id2, x:this.x, y:this.y});
         });
         //データベース書き換えた時
         pos2.on("value", function(snapshot) { 
+            id2 = snapshot.val().belong;
             shape2.setPosition(snapshot.val().x,snapshot.val().y);
         });
         
