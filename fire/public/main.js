@@ -12,7 +12,7 @@ phina.define('MainScene', {
         var label = phina.display.Label({text:"カードをドラッグで動かせます"});
         label.addChildTo(this);
         label.setPosition(320, 160);
-        // 手札領域
+        // 手札領域の追加
         var hand_field = phina.display.RectangleShape();
         hand_field.addChildTo(this);
         hand_field.setPosition(320,860);
@@ -20,18 +20,20 @@ phina.define('MainScene', {
         hand_field.fill = "pink";
         // データベースからカード生成
         var group = DisplayElement().addChildTo(this);
+//クラスを使おうとしてるけどうまくいかないかも
 //        firebase.database().ref("/pos/").on("child_added", function(snapshot) { 
 //            var shape = phina.display.RectangleShape();
 //            shape.addChildTo(group);
 //            card = Card(shape, snapshot);
 //        });
-        
+        //カード1の生成
         var pos1 = firebase.database().ref("/pos/c1/");
         var shape1 = phina.display.RectangleShape();
         var id1;
         shape1.addChildTo(group);
         //shape1.setScale(2,2);
         shape1.setInteractive(true);
+        //ドラック時
         shape1.on('pointmove', function(e) {
         shape1.x += e.pointer.dx;
             shape1.y += e.pointer.dy;
@@ -49,13 +51,14 @@ phina.define('MainScene', {
                 shape1.hide();
             }
         });
-        
+        //カード２の生成
         var pos2 = firebase.database().ref("/pos/c2/");
         var shape2 = phina.display.RectangleShape();
         var id2;
         shape2.addChildTo(group);
         //shape2.setScale(2,2);
         shape2.setInteractive(true);
+        //ドラッグ時
         shape2.on('pointmove', function(e) {
             shape2.x += e.pointer.dx;
             shape2.y += e.pointer.dy;
@@ -68,16 +71,17 @@ phina.define('MainScene', {
         });
         
         this.group = group;
-        this.update = function() {
-           this.setRectInteraction();
-        };
         
-        console.log(this.children);
         //ウィンドウ消した時
         window.onbeforeunload = function(){
             user.remove();
         }
     },
+    
+    update : function() {
+           this.setRectInteraction();
+    },
+    
     setRectInteraction: function() {
         // 全体を一旦タッチ可能にする
         this.group.children.each(function(rect) {
