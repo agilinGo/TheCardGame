@@ -1,5 +1,11 @@
 phina.globalize();
 
+var ASSETS = {
+    image: {
+      'Tramp': '../../Tramp/bk0.png',
+    },
+  };
+
 phina.define('MainScene', {
     superClass: 'phina.display.DisplayScene',
     
@@ -15,7 +21,7 @@ phina.define('MainScene', {
         // データベースからカード生成
         var group = DisplayElement().addChildTo(this);
         firebase.database().ref("/pos/").on("child_added", function(snapshot) { 
-            var shape = phina.display.RectangleShape();
+            var shape = phina.display.Sprite('Tramp');
             shape.addChildTo(group);
             card = Card(shape, snapshot);
         });
@@ -33,7 +39,7 @@ phina.define('Card', {
         var pos = snapshot.ref;
         var id = snapshot.val().id;
         obj.setPosition(100,100);
-        obj.setScale(2,3);
+        //obj.setScale(2,3);
         obj.setInteractive(true);
         //ドラッグした時
         obj.on('pointmove', function(e) {
@@ -52,6 +58,7 @@ phina.define('Card', {
 phina.main(function() {
     var app = phina.game.GameApp({
         startLabel: 'main',
+        assets: ASSETS,
     });
     app.run();
 });
