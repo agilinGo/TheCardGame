@@ -1,3 +1,5 @@
+phina.globalize();
+
 phina.define('MainScene', {
     superClass: 'phina.display.DisplayScene',
     
@@ -10,20 +12,16 @@ phina.define('MainScene', {
         var label = phina.display.Label({text:"カードをドラッグで動かせます"});
         label.addChildTo(this);
         label.setPosition(320, 160);
-        
-        var group = phina.display.DisplayElement().addChildTo(this);
-
-        
+        // データベースからカード生成
+        var group = DisplayElement().addChildTo(this);
         firebase.database().ref("/pos/").on("child_added", function(snapshot) { 
             var shape = phina.display.RectangleShape();
             shape.addChildTo(group);
-            Card(shape, snapshot);
+            card = Card(shape, snapshot);
         });
-        
-        console.log(group);
+        console.log(this.children);
         //ウィンドウ消した時
         window.onbeforeunload = function(){
-            mycard.remove();
             user.remove();
         }
     },
@@ -33,7 +31,7 @@ phina.define('Card', {
     init: function(obj,snapshot) {
         this.obj = obj;
         var pos = snapshot.ref;
-        var id;
+        var id = snapshot.val().id;
         obj.setPosition(100,100);
         obj.setScale(2,3);
         obj.setInteractive(true);
