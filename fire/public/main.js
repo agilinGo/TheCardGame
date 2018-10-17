@@ -43,12 +43,11 @@ phina.define('MainScene', {
         pos1.on("value", function(snapshot) { 
             id1 = snapshot.val().belong;
             shape1.setPosition(snapshot.val().x,snapshot.val().y);
-            console.log(id1);
-            console.log(ID);
             if (id1 == 0 || id1 ==ID) {
                 shape1.show();
             }else{
                 shape1.hide();
+                shape1.setInteractive(false);
             }
         });
         //カード２の生成
@@ -62,12 +61,18 @@ phina.define('MainScene', {
         shape2.on('pointmove', function(e) {
             shape2.x += e.pointer.dx;
             shape2.y += e.pointer.dy;
-            pos2.set({belong:id2, x:this.x, y:this.y});
+            pos2.set({belong:ID, x:this.x, y:this.y});
         });
         //データベース書き換えた時
         pos2.on("value", function(snapshot) { 
             id2 = snapshot.val().belong;
             shape2.setPosition(snapshot.val().x,snapshot.val().y);
+            if (id2 == 0 || id2 ==ID) {
+                shape2.show();
+            }else{
+                shape2.hide();
+                shape2.setInteractive(false);
+            }
         });
         
         this.group = group;
