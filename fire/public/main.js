@@ -1,5 +1,12 @@
 phina.globalize();
 
+var ASSETS = {
+    image: {
+      'c01': './c01.png',
+      'c02': './c02.png',
+    },
+  };
+
 phina.define('MainScene', {
     superClass: 'phina.display.DisplayScene',
     
@@ -28,7 +35,7 @@ phina.define('MainScene', {
 //        });
         //カード1の生成
         var pos1 = firebase.database().ref("/pos/c1/");
-        var shape1 = phina.display.RectangleShape();
+        var shape1 = phina.display.Sprite("c01");
         var id1;
         shape1.addChildTo(group);
         //shape1.setScale(2,2);
@@ -52,7 +59,7 @@ phina.define('MainScene', {
         });
         //カード２の生成
         var pos2 = firebase.database().ref("/pos/c2/");
-        var shape2 = phina.display.RectangleShape();
+        var shape2 = phina.display.Sprite("c02");
         var id2;
         shape2.addChildTo(group);
         //shape2.setScale(2,2);
@@ -80,6 +87,16 @@ phina.define('MainScene', {
         //ウィンドウ消した時
         window.onbeforeunload = function(){
             user.remove();
+            pos1.once('value').then(function(snapshot) {
+                if (snapshot.val().belong == ID) {
+                    pos1.set({belong:0, x:snapshot.val().x, y:snapshot.val().y});
+                }
+            });
+            pos2.once('value').then(function(snapshot) {
+                if (snapshot.val().belong == ID) {
+                    pos2.set({belong:0, x:snapshot.val().x, y:snapshot.val().y});
+                }
+            });
         }
     },
     
@@ -132,6 +149,7 @@ phina.define('Card', {
 phina.main(function() {
     var app = phina.game.GameApp({
         startLabel: 'main',
+        assets: ASSETS,
     });
     app.run();
 });
