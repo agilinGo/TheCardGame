@@ -26,6 +26,7 @@ phina.define('MainScene', {
         hand_field.setPosition(320,860);
         hand_field.setScale(10,3);
         hand_field.fill = "pink";
+        var hand = phina.geom.Rect(0, hand_field.y - hand_field.height / 2, hand_field.width*10, hand_field.height*3);
         // データベースからカード生成
         var group = DisplayElement().addChildTo(this);
 //クラスを使おうとしてるけどうまくいかないかも
@@ -43,9 +44,15 @@ phina.define('MainScene', {
         shape1.setInteractive(true);
         //ドラック時
         shape1.on('pointmove', function(e) {
-        shape1.x += e.pointer.dx;
-            shape1.y += e.pointer.dy;
-            pos1.set({belong:ID, x:this.x, y:this.y});
+            if(id1 == 0 || id1 ==ID){
+                shape1.x += e.pointer.dx;
+                shape1.y += e.pointer.dy;
+                if ( Collision.testRectRect(shape1, hand) ) {
+                    pos1.set({belong:ID, x:this.x, y:this.y});
+                }else{
+                    pos1.set({belong:0, x:this.x, y:this.y});
+                }
+            }
         });
         //データベース書き換えた時
         pos1.on("value", function(snapshot) { 
@@ -54,8 +61,7 @@ phina.define('MainScene', {
             if (id1 == 0 || id1 ==ID) {
                 shape1.show();
             }else{
-                shape1.hide();
-                shape1.setInteractive(false);
+                shape1.x += 1000;
             }
         });
         //カード２の生成
@@ -67,9 +73,15 @@ phina.define('MainScene', {
         shape2.setInteractive(true);
         //ドラッグ時
         shape2.on('pointmove', function(e) {
-            shape2.x += e.pointer.dx;
-            shape2.y += e.pointer.dy;
-            pos2.set({belong:ID, x:this.x, y:this.y});
+            if(id2 == 0 || id2 ==ID){
+                shape2.x += e.pointer.dx;
+                shape2.y += e.pointer.dy;
+                if ( Collision.testRectRect(shape2, hand) ) {
+                    pos2.set({belong:ID, x:this.x, y:this.y});
+                }else{
+                    pos2.set({belong:0, x:this.x, y:this.y});
+                }
+            }
         });
         //データベース書き換えた時
         pos2.on("value", function(snapshot) { 
@@ -78,8 +90,7 @@ phina.define('MainScene', {
             if (id2 == 0 || id2 ==ID) {
                 shape2.show();
             }else{
-                shape2.hide();
-                shape2.setInteractive(false);
+                shape2.x += 1000;
             }
         });
         
@@ -115,9 +126,7 @@ phina.define('MainScene', {
         this.group.children.each(function(rect, i) {
             self.group.children.each(function(target, j) {
                 // 重なっていて表示順が下のターゲットはタッチ不可にする
-                rec = phina.geom.Rect(rect.x, rect.y, rect.width, rect.height);
-                tar = phina.geom.Rect(target.x, target.y, target.width, target.height);
-                if (Collision.testRectRect(rec, tar) && j < i) {
+                if (Collision.testRectRect(rect, target) && j < i) {
                     target.setInteractive(false);
                 }
             });
