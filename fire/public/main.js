@@ -4,10 +4,10 @@ var ASSETS = {
     image: {
       'c01': './c01.png',
       'c02': './c02.png',
-      'c03': './c02.png',
-      'c04': './c02.png',
+      'c03': './c03.png',
+      'c04': './c01.png',
       'c05': './c02.png',
-      'c06': './c02.png',
+      'c06': './c03.png',
     },
   };
 
@@ -257,6 +257,26 @@ phina.define('MainScene', {
             pos2.once('value').then(function(snapshot) {
                 if (snapshot.val().belong == ID) {
                     pos2.set({belong:0, x:snapshot.val().x, y:snapshot.val().y});
+                }
+            });
+            pos3.once('value').then(function(snapshot) {
+                if (snapshot.val().belong == ID) {
+                    pos3.set({belong:0, x:snapshot.val().x, y:snapshot.val().y});
+                }
+            });
+            pos4.once('value').then(function(snapshot) {
+                if (snapshot.val().belong == ID) {
+                    pos4.set({belong:0, x:snapshot.val().x, y:snapshot.val().y});
+                }
+            });
+            pos5.once('value').then(function(snapshot) {
+                if (snapshot.val().belong == ID) {
+                    pos5.set({belong:0, x:snapshot.val().x, y:snapshot.val().y});
+                }
+            });
+            pos6.once('value').then(function(snapshot) {
+                if (snapshot.val().belong == ID) {
+                    pos6.set({belong:0, x:snapshot.val().x, y:snapshot.val().y});
                 }
             });
         }
