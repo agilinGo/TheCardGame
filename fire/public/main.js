@@ -309,7 +309,7 @@ phina.define('Card', {
         var pos = snapshot.ref;
         var id = snapshot.val().id;
         obj.setPosition(100,100);
-        obj.setScale(2,3);
+        //obj.setScale(2,3);
         obj.setInteractive(true);
         //ドラッグした時
         obj.on('pointmove', function(e) {
