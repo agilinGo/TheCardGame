@@ -8,6 +8,9 @@ var ASSETS = {
       'c04': './c01.png',
       'c05': './c02.png',
       'c06': './c03.png',
+      'rock':'../../janken/rock.jpg',
+      'paper':'../../janken/paper.jpg',
+      'scissors':'../../janken/scissors.jpg',
     },
   };
 
@@ -40,7 +43,7 @@ phina.define('MainScene', {
 //        });
         //カード1の生成
         var pos1 = firebase.database().ref("/pos/c1/");
-        var shape1 = phina.display.Sprite("c01");
+        var shape1 = phina.display.Sprite("rock");
         var id1;
         shape1.addChildTo(group);
         //shape1.setScale(2,2);
@@ -78,7 +81,7 @@ phina.define('MainScene', {
         });
 //カード２の生成=========
         var pos2 = firebase.database().ref("/pos/c2/");
-        var shape2 = phina.display.Sprite("c02");
+        var shape2 = phina.display.Sprite("rock");
         var id2;
         shape2.addChildTo(group);
         //shape2.setScale(2,2);
@@ -111,7 +114,7 @@ phina.define('MainScene', {
         });
 //カード３の生成=========
         var pos3 = firebase.database().ref("/pos/c3/");
-        var shape3 = phina.display.Sprite("c03");
+        var shape3 = phina.display.Sprite("paper");
         var id3;
         shape3.addChildTo(group);
         //shape3.setScale(3,3);
@@ -144,7 +147,7 @@ phina.define('MainScene', {
         });
 //カード４の生成=========
         var pos4 = firebase.database().ref("/pos/c4/");
-        var shape4 = phina.display.Sprite("c04");
+        var shape4 = phina.display.Sprite("paper");
         var id4;
         shape4.addChildTo(group);
         //shape4.setScale(4,4);
@@ -177,7 +180,7 @@ phina.define('MainScene', {
         });
 //カード５の生成=========
         var pos5 = firebase.database().ref("/pos/c5/");
-        var shape5 = phina.display.Sprite("c05");
+        var shape5 = phina.display.Sprite("scissors");
         var id5;
         shape5.addChildTo(group);
         //shape5.setScale(5,5);
@@ -210,7 +213,7 @@ phina.define('MainScene', {
         });
 //カード６の生成=========
         var pos6 = firebase.database().ref("/pos/c6/");
-        var shape6 = phina.display.Sprite("c06");
+        var shape6 = phina.display.Sprite("scissors");
         var id6;
         shape6.addChildTo(group);
         //shape6.setScale(6,6);
