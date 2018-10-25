@@ -17,6 +17,8 @@ var ASSETS = {
 phina.define('MainScene', {
     superClass: 'phina.display.DisplayScene',
     init: function() {
+        
+         
         this.superInit();
         var self = this;
         //IDの生成
@@ -32,45 +34,44 @@ phina.define('MainScene', {
         hand_field.setPosition(320,860);
         hand_field.setScale(10,3);
         hand_field.fill = "pink";
-        var hand = phina.geom.Rect(0, hand_field.y - hand_field.height / 2, hand_field.width*10, hand_field.height*3);
+        var hand = phina.geom.Rect(0, hand_field.y - hand_field.height / 2, hand_field.width*10, hand_field.height*10);
+       
         // データベースからカード生成
+        //親
         var group = DisplayElement().addChildTo(this);
-//クラスを使おうとしてるけどうまくいかないかも
-//        firebase.database().ref("/pos/").on("child_added", function(snapshot) { 
-//            var shape = phina.display.RectangleShape();
-//            shape.addChildTo(group);
-//            card = Card(shape, snapshot);
-//        });
+        
         //カード1の生成
         var pos1 = firebase.database().ref("/pos/c1/");
         var shape1 = phina.display.Sprite("rock");
         var id1;
+        pos1.set({belong:ID, x:100, y:100});
         shape1.addChildTo(group);
         //shape1.setScale(2,2);
         shape1.setInteractive(true);
-        //ドラック時
+        //ドラッグ時
         shape1.on('pointmove', function(e) {
             if(id1 == 0 || id1 ==ID){
                 shape1.x += e.pointer.dx;
                 shape1.y += e.pointer.dy;
                 if ( Collision.testRectRect(shape1, hand) ) {
-                    pos1.set({belong:ID, x:this.x, y:this.y});
+                        pos1.set({belong:ID, x:this.x, y:this.y});
                 }else{
-                    pos1.set({belong:0, x:this.x, y:this.y});
+                    pos1.set({belong:0,x:this.x, y:this.y});
                 }
+            }else{
+                shape1.on('pointend', function(e) {
+                    pos1.set({belong:0, x:this.x, y:this.y});
+                })
             }
         });
-        /*
+
+        shape1.on('pointstart', function(e) {
+            self.setRectInteraction();
+        });
         shape1.on('pointend', function(e) {
             self.setRectInteraction();
         });
-        */
-        shape1.on('pointstart',(e) => {
-            this.setRectInteraction();
-        });
-        shape1.on('pointend', function(e) {
-            self.setRectInteraction();
-        });        
+        
         //データベース書き換えた時
         pos1.on("value", function(snapshot) {
             id1 = snapshot.val().belong;
@@ -86,6 +87,7 @@ phina.define('MainScene', {
         var pos2 = firebase.database().ref("/pos/c2/");
         var shape2 = phina.display.Sprite("rock");
         var id2;
+        pos2.set({belong:ID, x:200, y:100});
         shape2.addChildTo(group);
         //shape2.setScale(2,2);
         shape2.setInteractive(true);
@@ -120,11 +122,12 @@ phina.define('MainScene', {
                 shape2.setInteractive(false)
             }
         });
-        /*
+        
 //カード３の生成=========
         var pos3 = firebase.database().ref("/pos/c3/");
         var shape3 = phina.display.Sprite("paper");
         var id3;
+        pos3.set({belong:ID, x:300, y:100});
         shape3.addChildTo(group);
         //shape3.setScale(3,3);
         shape3.setInteractive(true);
@@ -151,13 +154,15 @@ phina.define('MainScene', {
             if (id3 == 0 || id3 ==ID) {
                 shape3.show();
             }else{
-                shape3.x += 1000;
+                shape3.hide()
+                shape3.setInteractive(false)
             }
         });
 //カード４の生成=========
         var pos4 = firebase.database().ref("/pos/c4/");
         var shape4 = phina.display.Sprite("paper");
         var id4;
+        pos4.set({belong:ID, x:400, y:100});
         shape4.addChildTo(group);
         //shape4.setScale(4,4);
         shape4.setInteractive(true);
@@ -184,13 +189,15 @@ phina.define('MainScene', {
             if (id4 == 0 || id4 ==ID) {
                 shape4.show();
             }else{
-                shape4.x += 1000;
+                shape4.hide()
+                shape4.setInteractive(false)
             }
         });
 //カード５の生成=========
         var pos5 = firebase.database().ref("/pos/c5/");
         var shape5 = phina.display.Sprite("scissors");
         var id5;
+        pos5.set({belong:ID, x:500, y:100});
         shape5.addChildTo(group);
         //shape5.setScale(5,5);
         shape5.setInteractive(true);
@@ -217,13 +224,15 @@ phina.define('MainScene', {
             if (id5 == 0 || id5 ==ID) {
                 shape5.show();
             }else{
-                shape5.x += 1000;
+                shape5.hide()
+                shape5.setInteractive(false)
             }
         });
 //カード６の生成=========
         var pos6 = firebase.database().ref("/pos/c6/");
         var shape6 = phina.display.Sprite("scissors");
         var id6;
+        pos6.set({belong:ID, x:600, y:100});
         shape6.addChildTo(group);
         //shape6.setScale(6,6);
         shape6.setInteractive(true);
@@ -250,7 +259,8 @@ phina.define('MainScene', {
             if (id6 == 0 || id6 ==ID) {
                 shape6.show();
             }else{
-                shape6.x += 1000;
+                shape6.hide()
+                shape6.setInteractive(false)
             }
         });    
         */
@@ -315,28 +325,6 @@ phina.define('MainScene', {
             });
         });
     }
-});
-
-phina.define('Card', {
-    init: function(obj,snapshot) {
-        this.obj = obj;
-        var pos = snapshot.ref;
-        var id = snapshot.val().id;
-        obj.setPosition(100,100);
-        //obj.setScale(2,3);
-        obj.setInteractive(true);
-        //ドラッグした時
-        obj.on('pointmove', function(e) {
-            obj.x += e.pointer.dx;
-            obj.y += e.pointer.dy;
-            console.log(id);
-            pos.set({x:this.x, y:this.y});
-        });
-        //データベース書き換えた時
-        pos.on("value", function(snapshot) { 
-            obj.setPosition(snapshot.val().x,snapshot.val().y);
-        });
-    },
 });
 
 phina.main(function() {
