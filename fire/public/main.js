@@ -281,7 +281,6 @@ phina.define('MainScene', {
                     pos2.set({belong:0, x:snapshot.val().x, y:snapshot.val().y});
                 }
             });
-            /*
             pos3.once('value').then(function(snapshot) {
                 if (snapshot.val().belong == ID) {
                     pos3.set({belong:0, x:snapshot.val().x, y:snapshot.val().y});
@@ -302,7 +301,7 @@ phina.define('MainScene', {
                     pos6.set({belong:0, x:snapshot.val().x, y:snapshot.val().y});
                 }
             });
-            */
+            
         }
     },
     
