@@ -65,18 +65,21 @@ phina.define('MainScene', {
             self.setRectInteraction();
         });
         */
-        shape1.on('pointend',(e) => {
+        shape1.on('pointstart',(e) => {
             this.setRectInteraction();
         });
+        shape1.on('pointend', function(e) {
+            self.setRectInteraction();
+        });        
         //データベース書き換えた時
         pos1.on("value", function(snapshot) {
-            self.setRectInteraction();
             id1 = snapshot.val().belong;
             shape1.setPosition(snapshot.val().x,snapshot.val().y);
             if (id1 == 0 || id1 ==ID) {
                 shape1.show();
             }else{
-                shape1.x += 1000;
+                shape1.hide()
+                shape1.setInteractive(false)
             }
         });
 //カード２の生成=========
@@ -98,20 +101,26 @@ phina.define('MainScene', {
                 }
             }
         });
+
+        shape2.on('pointstart', function(e) {
+            self.setRectInteraction();
+        });
         shape2.on('pointend', function(e) {
             self.setRectInteraction();
         });
+        
         //データベース書き換えた時
         pos2.on("value", function(snapshot) {
-            self.setRectInteraction();
             id2 = snapshot.val().belong;
             shape2.setPosition(snapshot.val().x,snapshot.val().y);
             if (id2 == 0 || id2 ==ID) {
                 shape2.show();
             }else{
-                shape2.x += 1000;
+                shape2.hide()
+                shape2.setInteractive(false)
             }
         });
+        /*
 //カード３の生成=========
         var pos3 = firebase.database().ref("/pos/c3/");
         var shape3 = phina.display.Sprite("paper");
@@ -244,7 +253,7 @@ phina.define('MainScene', {
                 shape6.x += 1000;
             }
         });    
-        
+        */
         
         
         this.group = group;
@@ -262,6 +271,7 @@ phina.define('MainScene', {
                     pos2.set({belong:0, x:snapshot.val().x, y:snapshot.val().y});
                 }
             });
+            /*
             pos3.once('value').then(function(snapshot) {
                 if (snapshot.val().belong == ID) {
                     pos3.set({belong:0, x:snapshot.val().x, y:snapshot.val().y});
@@ -282,6 +292,7 @@ phina.define('MainScene', {
                     pos6.set({belong:0, x:snapshot.val().x, y:snapshot.val().y});
                 }
             });
+            */
         }
     },
     
