@@ -40,11 +40,11 @@ phina.define('MainScene', {
         //親
         var group = DisplayElement().addChildTo(this);
         
-        //カード1の生成
+//カード1の生成=========
         var pos1 = firebase.database().ref("/pos/c1/");
         var shape1 = phina.display.Sprite("rock");
         var id1;
-        pos1.set({belong:ID, x:100, y:100});
+        pos1.set({belong:0, x:100, y:420});
         shape1.addChildTo(group);
         //shape1.setScale(2,2);
         shape1.setInteractive(true);
@@ -87,7 +87,7 @@ phina.define('MainScene', {
         var pos2 = firebase.database().ref("/pos/c2/");
         var shape2 = phina.display.Sprite("rock");
         var id2;
-        pos2.set({belong:ID, x:200, y:100});
+        pos2.set({belong:0, x:180, y:420});
         shape2.addChildTo(group);
         //shape2.setScale(2,2);
         shape2.setInteractive(true);
@@ -122,14 +122,12 @@ phina.define('MainScene', {
                 shape2.setInteractive(false)
             }
         });
-        
-//カード３の生成=========
+//カード3の生成=========
         var pos3 = firebase.database().ref("/pos/c3/");
         var shape3 = phina.display.Sprite("paper");
         var id3;
-        pos3.set({belong:ID, x:300, y:100});
+        pos3.set({belong:0, x:100, y:500});
         shape3.addChildTo(group);
-        //shape3.setScale(3,3);
         shape3.setInteractive(true);
         //ドラッグ時
         shape3.on('pointmove', function(e) {
@@ -143,12 +141,16 @@ phina.define('MainScene', {
                 }
             }
         });
+
+        shape3.on('pointstart', function(e) {
+            self.setRectInteraction();
+        });
         shape3.on('pointend', function(e) {
             self.setRectInteraction();
         });
+        
         //データベース書き換えた時
         pos3.on("value", function(snapshot) {
-            self.setRectInteraction();
             id3 = snapshot.val().belong;
             shape3.setPosition(snapshot.val().x,snapshot.val().y);
             if (id3 == 0 || id3 ==ID) {
@@ -162,9 +164,8 @@ phina.define('MainScene', {
         var pos4 = firebase.database().ref("/pos/c4/");
         var shape4 = phina.display.Sprite("paper");
         var id4;
-        pos4.set({belong:ID, x:400, y:100});
+        pos4.set({belong:0, x:180, y:500});
         shape4.addChildTo(group);
-        //shape4.setScale(4,4);
         shape4.setInteractive(true);
         //ドラッグ時
         shape4.on('pointmove', function(e) {
@@ -178,12 +179,14 @@ phina.define('MainScene', {
                 }
             }
         });
+        shape4.on('pointstart', function(e) {
+            self.setRectInteraction();
+        });
         shape4.on('pointend', function(e) {
             self.setRectInteraction();
         });
         //データベース書き換えた時
         pos4.on("value", function(snapshot) {
-            self.setRectInteraction();
             id4 = snapshot.val().belong;
             shape4.setPosition(snapshot.val().x,snapshot.val().y);
             if (id4 == 0 || id4 ==ID) {
@@ -197,7 +200,7 @@ phina.define('MainScene', {
         var pos5 = firebase.database().ref("/pos/c5/");
         var shape5 = phina.display.Sprite("scissors");
         var id5;
-        pos5.set({belong:ID, x:500, y:100});
+        pos5.set({belong:0, x:100, y:580});
         shape5.addChildTo(group);
         //shape5.setScale(5,5);
         shape5.setInteractive(true);
@@ -213,12 +216,14 @@ phina.define('MainScene', {
                 }
             }
         });
+        shape5.on('pointstart', function(e) {
+            self.setRectInteraction();
+        });
         shape5.on('pointend', function(e) {
             self.setRectInteraction();
         });
         //データベース書き換えた時
         pos5.on("value", function(snapshot) {
-            self.setRectInteraction();
             id5 = snapshot.val().belong;
             shape5.setPosition(snapshot.val().x,snapshot.val().y);
             if (id5 == 0 || id5 ==ID) {
@@ -232,7 +237,7 @@ phina.define('MainScene', {
         var pos6 = firebase.database().ref("/pos/c6/");
         var shape6 = phina.display.Sprite("scissors");
         var id6;
-        pos6.set({belong:ID, x:600, y:100});
+        pos6.set({belong:0, x:180, y:580});
         shape6.addChildTo(group);
         //shape6.setScale(6,6);
         shape6.setInteractive(true);
@@ -248,12 +253,14 @@ phina.define('MainScene', {
                 }
             }
         });
+        shape6.on('pointstart', function(e) {
+            self.setRectInteraction();
+        });
         shape6.on('pointend', function(e) {
             self.setRectInteraction();
         });
         //データベース書き換えた時
         pos6.on("value", function(snapshot) {
-            self.setRectInteraction();
             id6 = snapshot.val().belong;
             shape6.setPosition(snapshot.val().x,snapshot.val().y);
             if (id6 == 0 || id6 ==ID) {
@@ -263,7 +270,7 @@ phina.define('MainScene', {
                 shape6.setInteractive(false)
             }
         });    
-        */
+        
         
         
         this.group = group;
