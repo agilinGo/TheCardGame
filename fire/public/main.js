@@ -8,9 +8,9 @@ var ASSETS = {
     },
   };
 
-phina.define('MainScene', {
+phina.define('GameScene', {
     superClass: 'phina.display.DisplayScene',
-    init: function() {
+    init: function(param) {
         
          
         this.superInit();
@@ -35,8 +35,13 @@ phina.define('MainScene', {
         var group = DisplayElement().addChildTo(this);
 
         var poss = [];
+        console.log(param.room.val().name);
+        console.log(param.room.val().cards);
+        console.log(param.room.child("/cards").child("/c1").val().id);
+        console.log(param.room.child("/cards").child("/c1").val().belong);
+        console.log(param.room.child("/cards"));
 //クラスを使おうとしてるけどうまくいかないかも
-        firebase.database().ref("/kenta/").on("child_added", function(snapshot) { 
+        param.room.child("/cards").on("child_added", function(snapshot) { 
             //カード1の生成
             var pos1 = snapshot.ref;
             poss.push(pos1);
@@ -118,9 +123,66 @@ phina.define('MainScene', {
     }
 });
 
+phina.define('TitleScene', {
+    superClass: 'phina.display.DisplayScene',
+    init: function() { 
+        this.superInit();
+        self = this;
+        Button({
+            text: "enter",
+            fontSize:60,
+          }
+        ).addChildTo(this).setPosition(this.gridX.center(),this.gridY.span(10)).onpush = function(){
+        self.exit('Room'); 
+        };
+        Button({
+            text: "make",
+            fontSize:60,
+          }
+        ).addChildTo(this).setPosition(this.gridX.center(),this.gridY.span(12)).onpush = function(){
+        self.exit('Game'); 
+        };
+    }
+});
+
+phina.define('RoomScene', {
+    superClass: 'phina.display.DisplayScene',
+    init: function() { 
+        this.superInit();
+        self = this;
+        var i = 1;
+        firebase.database().ref("/room").on("child_added", function(snapshot) {
+            var name = snapshot.val().name;
+            Button({
+                text: name,
+                fontSize:30,
+              }
+            ).addChildTo(self).setPosition(self.gridX.center(),self.gridY.span(i)).onpush = function(){
+            self.exit('Game', {room: snapshot}); 
+            };
+            i = i + 2;
+        });
+        
+    }
+});
+
 phina.main(function() {
-    var app = phina.game.GameApp({
-        startLabel: 'main',
+    var app = GameApp({
+        startLabel: 'Title',
+        scenes: [
+            {
+                className:'GameScene',
+                label: 'Game',
+            },
+            {
+                className:'TitleScene',
+                label: 'Title',
+            },
+            {
+                className:'RoomScene',
+                label: 'Room',
+            },
+        ],
         assets: ASSETS,
     });
     app.run();
