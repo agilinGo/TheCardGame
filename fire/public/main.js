@@ -70,6 +70,7 @@ phina.define('MainScene', {
                 shape1.setPosition(snapshot.val().x,snapshot.val().y);
                 if (id1 == 0 || id1 ==ID) {
                     shape1.show();
+                    shape1.setInteractive(true);
                 }else{
                     shape1.hide();
                     shape1.setInteractive(false);
