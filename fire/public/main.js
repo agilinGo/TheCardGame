@@ -131,7 +131,26 @@ phina.define('TitleScene', {
             fontSize:60,
           }
         ).addChildTo(this).setPosition(this.gridX.center(),this.gridY.span(12)).onpush = function(){
-        self.exit('Game'); 
+            var myroom = firebase.database().ref("/room/").push({
+                name : "myroom",
+                cards : {
+                    c1 : {
+                        belong : 0,
+                        id : 1,
+                        img : "rock",
+                        x : 100,
+                        y : 100
+                    },
+                    c2 : {
+                        belong : 0,
+                        id : 2,
+                        img : "rock",
+                        x : 200,
+                        y : 100
+                    }
+                }
+            });
+            self.exit('Game', {room : myroom}); 
         };
     }
 });
@@ -142,7 +161,7 @@ phina.define('RoomScene', {
         this.superInit();
         this.backgroundColor = 'lightblue';
         self = this;
-        var i = 1;
+        var i = 2;
         firebase.database().ref("/room").on("child_added", function(snapshot) {
             var name = snapshot.val().name;
             Button({
@@ -150,13 +169,14 @@ phina.define('RoomScene', {
                 fontSize:30,
               }
             ).addChildTo(self).setPosition(self.gridX.center(),self.gridY.span(i)).onpush = function(){
-            self.exit('Game', {room: snapshot}); 
+            self.exit('Game', {room : snapshot}); 
             };
             i = i + 2;
         });
         
     }
 });
+
 
 phina.main(function() {
     var app = GameApp({
