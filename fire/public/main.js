@@ -11,9 +11,8 @@ var ASSETS = {
 phina.define('GameScene', {
     superClass: 'phina.display.DisplayScene',
     init: function(param) {
-        
-         
-        this.superInit();
+        this.superInit(param);
+        this.backgroundColor = 'lightblue';
         var self = this;
         //IDの生成
         var ID = Math.round(Math.random()*1000000);
@@ -34,14 +33,9 @@ phina.define('GameScene', {
         //親
         var group = DisplayElement().addChildTo(this);
 
-        var poss = [];
-        console.log(param.room.val().name);
-        console.log(param.room.val().cards);
-        console.log(param.room.child("/cards").child("/c1").val().id);
-        console.log(param.room.child("/cards").child("/c1").val().belong);
-        console.log(param.room.child("/cards"));
+        var poss = []; //場所の参照をまとめておく。
 //クラスを使おうとしてるけどうまくいかないかも
-        param.room.child("/cards").on("child_added", function(snapshot) { 
+        param.room.child("/cards/").ref.on("child_added", function(snapshot) { 
             //カード1の生成
             var pos1 = snapshot.ref;
             poss.push(pos1);
@@ -83,11 +77,7 @@ phina.define('GameScene', {
             }); 
         });
         
-        this.group = group;                 
-        
-        for (let p of poss) {
-            console.log(p);
-        }
+        this.group = group;
 
         //ウィンドウ消した時
         window.onbeforeunload = function(){
@@ -127,6 +117,7 @@ phina.define('TitleScene', {
     superClass: 'phina.display.DisplayScene',
     init: function() { 
         this.superInit();
+        this.backgroundColor = 'lightblue';
         self = this;
         Button({
             text: "enter",
@@ -149,6 +140,7 @@ phina.define('RoomScene', {
     superClass: 'phina.display.DisplayScene',
     init: function() { 
         this.superInit();
+        this.backgroundColor = 'lightblue';
         self = this;
         var i = 1;
         firebase.database().ref("/room").on("child_added", function(snapshot) {
