@@ -11,6 +11,8 @@ var ASSETS = {
 phina.define('MainScene', {
     superClass: 'phina.display.DisplayScene',
     init: function() {
+        
+         
         this.superInit();
         var self = this;
         //IDの生成
@@ -26,8 +28,10 @@ phina.define('MainScene', {
         hand_field.setPosition(320,860);
         hand_field.setScale(10,3);
         hand_field.fill = "pink";
-        var hand = phina.geom.Rect(0, hand_field.y - hand_field.height / 2, hand_field.width*10, hand_field.height*3);
+        var hand = phina.geom.Rect(0, hand_field.y - hand_field.height / 2, hand_field.width*10, hand_field.height*10);
+       
         // データベースからカード生成
+        //親
         var group = DisplayElement().addChildTo(this);
 
         var poss = [];
@@ -83,7 +87,6 @@ phina.define('MainScene', {
         window.onbeforeunload = function(){
             user.remove();
             for (let p of poss) {
-                console.log(p);
                 p.once('value').then(function(snapshot) {
                     if (snapshot.val().belong == ID) {
                         p.update({belong:0});
@@ -112,28 +115,6 @@ phina.define('MainScene', {
             });
         });
     }
-});
-
-phina.define('Card', {
-    init: function(obj,snapshot) {
-        this.obj = obj;
-        var pos = snapshot.ref;
-        var id = snapshot.val().id;
-        obj.setPosition(100,100);
-        //obj.setScale(2,3);
-        obj.setInteractive(true);
-        //ドラッグした時
-        obj.on('pointmove', function(e) {
-            obj.x += e.pointer.dx;
-            obj.y += e.pointer.dy;
-            console.log(id);
-            pos.set({x:this.x, y:this.y});
-        });
-        //データベース書き換えた時
-        pos.on("value", function(snapshot) { 
-            obj.setPosition(snapshot.val().x,snapshot.val().y);
-        });
-    },
 });
 
 phina.main(function() {
