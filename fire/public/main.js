@@ -3,15 +3,15 @@ phina.globalize();
 var ASSETS = {
     image: {
       'rock':'../../janken/rock.jpg',
-      'paper':'../../janken/paper.jpg',
       'scissors':'../../janken/scissors.jpg',
     },
-  };
+};
 
 phina.define('GameScene', {
     superClass: 'phina.display.DisplayScene',
     init: function(param) {
         this.superInit(param);
+
         this.backgroundColor = 'lightblue';
         var self = this;
         //IDの生成
@@ -34,18 +34,16 @@ phina.define('GameScene', {
         var group = DisplayElement().addChildTo(this);
 
         var poss = []; //場所の参照をまとめておく。
-//クラスを使おうとしてるけどうまくいかないかも
+//データベースからカードの生成
         param.room.child("/cards/").ref.on("child_added", function(snapshot) { 
-            //カード1の生成
             var pos1 = snapshot.ref;
             poss.push(pos1);
             var img = snapshot.val().img;
             var shape1 = phina.display.Sprite(img);
             var id1;
             shape1.addChildTo(group);
-            //shape1.setScale(2,2);
             shape1.setInteractive(true);
-            //ドラック時
+            //ドラック時処理
             shape1.on('pointmove', function(e) {
                 if(id1 == 0 || id1 ==ID){
                     shape1.x += e.pointer.dx;
@@ -63,7 +61,7 @@ phina.define('GameScene', {
             shape1.on('pointend', function(e) {
                 self.setRectInteraction();
             });
-            //データベース書き換えた時
+            //データベース書き換えた時の処理
             pos1.on("value", function(snapshot) {
                 id1 = snapshot.val().belong;
                 shape1.setPosition(snapshot.val().x,snapshot.val().y);
@@ -79,8 +77,9 @@ phina.define('GameScene', {
         
         this.group = group;
 
-        //ウィンドウ消した時
+        //ウィンドウ消した時の処理
         window.onbeforeunload = function(){
+            //ユーザを消して手札を解放する
             user.remove();
             for (let p of poss) {
                 p.once('value').then(function(snapshot) {
@@ -95,6 +94,7 @@ phina.define('GameScene', {
     update : function() {
     },
     
+    //重なりの処理
     setRectInteraction: function() {
         // 全体を一旦タッチ可能にする
         this.group.children.each(function(rect) {
@@ -113,10 +113,11 @@ phina.define('GameScene', {
     }
 });
 
+//タイトルメニュー
 phina.define('TitleScene', {
     superClass: 'phina.display.DisplayScene',
     init: function() { 
-        this.superInit();
+        this.superInit();        
         this.backgroundColor = 'lightblue';
         self = this;
         Button({
@@ -144,17 +145,18 @@ phina.define('TitleScene', {
                     c2 : {
                         belong : 0,
                         id : 2,
-                        img : "rock",
+                        img : "paper",
                         x : 200,
                         y : 100
                     }
                 }
             });
-            self.exit('Game', {room : myroom}); 
+            self.exit('Load', {room : myroom}); 
         };
     }
 });
 
+//ルーム選択
 phina.define('RoomScene', {
     superClass: 'phina.display.DisplayScene',
     init: function() { 
@@ -169,7 +171,7 @@ phina.define('RoomScene', {
                 fontSize:30,
               }
             ).addChildTo(self).setPosition(self.gridX.center(),self.gridY.span(i)).onpush = function(){
-            self.exit('Game', {room : snapshot}); 
+            self.exit('Load', {room : snapshot}); 
             };
             i = i + 2;
         });
@@ -177,7 +179,23 @@ phina.define('RoomScene', {
     }
 });
 
+//assetのロード
+phina.define('MyLoadingScene', {
+    // デフォルトのLoadingSceneを継承
+    superClass: 'phina.game.LoadingScene',
+    // コンストラクタ
+    init: function(options) {
+        ASSETS["image"]["paper"] = '../../janken/paper.jpg';        
+        this.superInit(options);
+        // メソッド上書き
+        this.gauge.onfull = function() {
+        // 次のシーンへ
+        this.exit('Game',options);
+        }.bind(this);
+    },
+  });
 
+//メイン処理
 phina.main(function() {
     var app = GameApp({
         startLabel: 'Title',
@@ -193,6 +211,10 @@ phina.main(function() {
             {
                 className:'RoomScene',
                 label: 'Room',
+            },
+            {
+                className:'MyLoadingScene',
+                label: 'Load',
             },
         ],
         assets: ASSETS,
