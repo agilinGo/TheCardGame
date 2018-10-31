@@ -2,8 +2,8 @@ phina.globalize();
 
 var ASSETS = {
     image: {
-        'rock': '../../janken/rock.jpg',
-        'scissors': '../../janken/scissors.jpg',
+        'rock': './image/rock.jpg',
+        'scissors': './image/scissors.jpg',
     },
 };
 
@@ -155,26 +155,16 @@ phina.define('TitleScene', {
             self.exit('Load', { room: myroom });
         };
         var storage = firebase.storage().ref("/rock.jpg");
-        console.log(storage.getDownloadURL());
         storage.getDownloadURL().then(function (url) {
-            // `url` is the download URL for 'images/stars.jpg'
-
-            // This can be downloaded directly:
-            var xhr = new XMLHttpRequest();
-            xhr.responseType = 'blob';
-            xhr.onload = function (event) {
-                var blob = xhr.response;
-                console.log(blob);
-                var objectURL = window.URL.createObjectURL(blob);
-                var link = document.createElement("a");
-                document.body.appendChild(link);
-                link.href = objectURL;
-                link.download = "test.jpg";
-                link.click();
-                document.body.removeChild(link);
+            var phpxhr = new XMLHttpRequest();
+            phpxhr.onload = function (event) {
+                var aaa = phpxhr.response;
+                console.log(aaa);
             };
-            xhr.open('GET', url);
-            xhr.send();
+            console.log(url);
+            phpxhr.open("POST", "./download.php",true);
+            phpxhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            phpxhr.send("data="+url);
         });
     }
 });
