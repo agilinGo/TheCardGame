@@ -2,12 +2,9 @@ phina.globalize();
 
 let ASSETS = {
     image: {
-        'rock'     : './image/rock.jpg',
         'scissors' : './image/scissors.jpg',
     },
 };
-
-
 
 phina.define('GameScene', {
     superClass: 'phina.display.DisplayScene',
@@ -15,7 +12,7 @@ phina.define('GameScene', {
         this.superInit(param);
 
         this.backgroundColor = 'lightblue';
-        var self = this;
+        const self = this;
         //IDの生成
         var ID = Math.round(Math.random() * 1000000);
         var user = firebase.database().ref("/users").push({ id: ID });
@@ -121,7 +118,7 @@ phina.define('TitleScene', {
     init: function () {
         this.superInit();
         this.backgroundColor = 'lightblue';
-        self = this;
+        const self = this;
         Button({
             text: "enter",
             fontSize: 60,
@@ -134,64 +131,51 @@ phina.define('TitleScene', {
             fontSize: 60,
         }
         ).addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(12)).onpush = function () {
-            var myroom = firebase.database().ref("/room/").push({
-                name: "myroom",
-                cards: {
-                    c1: {
-                        belong: 0,
-                        id: 1,
-                        img: "rock",
-                        x: 100,
-                        y: 100
-                    },
-                    c2: {
-                        belong: 0,
-                        id: 2,
-                        img: "paper",
-                        x: 200,
-                        y: 100
-                    }
-                }
-            });
-            self.exit('Make', { room: myroom });
+            self.exit('Make');
         };
     }
 });
 
-// //ルーム作成
-// phina.define('MakeScene', {
-//     superClass: 'phina.display.DisplayScene',
-//     init: function (options) {
-//         this.superInit(options);
-//         self = this;
-// /*
-//         var storage = firebase.storage().ref("/Tramp");
-
-//         //*ここで画像をダウンロードします
-//         var storage = firebase.storage().ref("/paper.jpg");
-//         storage.getDownloadURL().then(function (url) {
-//             var phpxhr = new XMLHttpRequest();
-//             console.log(url);
-//             //options["url"] = url;
-//         });
-// */
-//         console.log("a");
-//         this.exit('Game', options);
-//     }
-// });
-
 phina.define('MakeScene', {
     superClass: 'phina.display.DisplayScene',
-    init: function (options) {
+    init: function () {
         this.superInit();
         this.backgroundColor = 'lightblue';
         self = this;
 
+        var myroom = firebase.database().ref("/room/").push({
+            name: "myroom",
+            cards: {
+                c1: {
+                    belong: 0,
+                    id: 1,
+                    img: "/rock.jpg",
+                    x: 100,
+                    y: 100
+                },
+                c2: {
+                    belong: 0,
+                    id: 2,
+                    img: "/paper.jpg",
+                    x: 200,
+                    y: 100
+                }
+            }
+        });
 
-        var storage = firebase.storage().ref("/Tramp/bk0.png");
-        storage.getDownloadURL().then(function (url) {
-            console.log(url);
-            options["url"] = url;
+        var param = { room: myroom };
+        
+        myroom.child("/cards/").ref.once('value').then(function (snapshot) {
+            const snapval = snapshot.val();
+            let pathes = {};
+            param["card"] = []; // 空の配列            
+            for(let x in snapval){
+                const path = snapval[x].img;  
+                const storage = firebase.storage().ref(path);
+                storage.getDownloadURL().then(function (url) {
+                    param["card"].push({name: path, url: url});
+                });
+            }
         });
 
         Button({
@@ -199,7 +183,7 @@ phina.define('MakeScene', {
             fontSize: 30,
         }
         ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(2)).onpush = function () {
-            self.exit('Load', options);
+            self.exit('Load', param);
         };
 
 
@@ -212,16 +196,31 @@ phina.define('RoomScene', {
     init: function () {
         this.superInit();
         this.backgroundColor = 'lightblue';
-        self = this;
+        const self = this;
         var i = 2;
         firebase.database().ref("/room").on("child_added", function (snapshot) {
             var name = snapshot.val().name;
+            var param = { room: snapshot };
+            snapshot.child("/cards/").ref.once('value').then(function (snapshot2) {
+                const snapval = snapshot2.val();
+                let pathes = {};
+                param["card"] = []; // 空の配列            
+                for(let x in snapval){
+                    const path = snapval[x].img;
+                    console.log(path);
+                    const storage = firebase.storage().ref(path);
+                    storage.getDownloadURL().then(function (url) {
+                        param["card"].push({name: path, url: url});
+                        console.log(url);
+                    });
+                }
+            });
             Button({
                 text: name,
                 fontSize: 30,
             }
             ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(i)).onpush = function () {
-                self.exit('Load', { room: snapshot });
+                self.exit('Load',param);
             };
             i = i + 2;
         });
@@ -234,14 +233,16 @@ phina.define('MyLoadingScene', {
     // デフォルトのLoadingSceneを継承
     superClass: 'phina.game.LoadingScene',
     // コンストラクタ
-    init: function (options) {
-        alert(options["url"]);
-        ASSETS["image"]["paper"] = options["url"];
-        this.superInit(options);
+    init: function (param) {
+  
+        for (let p in param["card"]){
+            ASSETS["image"][param["card"][p].name] = param["card"][p].url;
+        }
+        this.superInit(param);
         // メソッド上書き
         this.gauge.onfull = function () {
             // 次のシーンへ
-            this.exit('Game', options);
+            this.exit('Game', param);
         }.bind(this);
     },
 });
