@@ -1,11 +1,13 @@
 phina.globalize();
 
-var ASSETS = {
+let ASSETS = {
     image: {
-        'rock': './image/rock.jpg',
-        'scissors': './image/scissors.jpg',
+        'rock'     : './image/rock.jpg',
+        'scissors' : './image/scissors.jpg',
     },
 };
+
+
 
 phina.define('GameScene', {
     superClass: 'phina.display.DisplayScene',
@@ -151,21 +153,56 @@ phina.define('TitleScene', {
                     }
                 }
             });
-
-            self.exit('Load', { room: myroom });
+            self.exit('Make', { room: myroom });
         };
-        var storage = firebase.storage().ref("/rock.jpg");
+    }
+});
+
+// //ルーム作成
+// phina.define('MakeScene', {
+//     superClass: 'phina.display.DisplayScene',
+//     init: function (options) {
+//         this.superInit(options);
+//         self = this;
+// /*
+//         var storage = firebase.storage().ref("/Tramp");
+
+//         //*ここで画像をダウンロードします
+//         var storage = firebase.storage().ref("/paper.jpg");
+//         storage.getDownloadURL().then(function (url) {
+//             var phpxhr = new XMLHttpRequest();
+//             console.log(url);
+//             //options["url"] = url;
+//         });
+// */
+//         console.log("a");
+//         this.exit('Game', options);
+//     }
+// });
+
+phina.define('MakeScene', {
+    superClass: 'phina.display.DisplayScene',
+    init: function (options) {
+        this.superInit();
+        this.backgroundColor = 'lightblue';
+        self = this;
+
+
+        var storage = firebase.storage().ref("/Tramp/bk0.png");
         storage.getDownloadURL().then(function (url) {
-            var phpxhr = new XMLHttpRequest();
-            phpxhr.onload = function (event) {
-                var aaa = phpxhr.response;
-                console.log(aaa);
-            };
             console.log(url);
-            phpxhr.open("POST", "./download.php",true);
-            phpxhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            phpxhr.send("data="+url);
+            options["url"] = url;
         });
+
+        Button({
+            text: "name",
+            fontSize: 30,
+        }
+        ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(2)).onpush = function () {
+            self.exit('Load', options);
+        };
+
+
     }
 });
 
@@ -198,7 +235,8 @@ phina.define('MyLoadingScene', {
     superClass: 'phina.game.LoadingScene',
     // コンストラクタ
     init: function (options) {
-        ASSETS["image"]["paper"] = '../../janken/paper.jpg';
+        alert(options["url"]);
+        ASSETS["image"]["paper"] = options["url"];
         this.superInit(options);
         // メソッド上書き
         this.gauge.onfull = function () {
@@ -224,6 +262,10 @@ phina.main(function () {
             {
                 className: 'RoomScene',
                 label: 'Room',
+            },
+            {
+                className: 'MakeScene',
+                label: 'Make',
             },
             {
                 className: 'MyLoadingScene',
