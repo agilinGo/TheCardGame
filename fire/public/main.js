@@ -198,29 +198,49 @@ phina.define('RoomScene', {
         this.backgroundColor = 'lightblue';
         const self = this;
         var i = 2;
+        var counter1 = 0;
+        var counter2 = 0;
+        var sel = false;
+        var param;
         firebase.database().ref("/room").on("child_added", function (snapshot) {
             var name = snapshot.val().name;
-            var param = { room: snapshot };
-            snapshot.child("/cards/").ref.once('value').then(function (snapshot2) {
-                const snapval = snapshot2.val();
-                let pathes = {};
-                param["card"] = []; // 空の配列            
-                for(let x in snapval){
-                    const path = snapval[x].img;
-                    console.log(path);
-                    const storage = firebase.storage().ref(path);
-                    storage.getDownloadURL().then(function (url) {
-                        param["card"].push({name: path, url: url});
-                        console.log(url);
-                    });
-                }
-            });
             Button({
                 text: name,
                 fontSize: 30,
             }
             ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(i)).onpush = function () {
-                self.exit('Load',param);
+                if (!sel) {
+                    console.log(this);
+                    this.fill = "pink";
+                    sel = true;
+                    param = { room: snapshot };
+                    snapshot.child("/cards/").ref.once('value').then(function (snapshot2) {
+                        const snapval = snapshot2.val();
+                        let pathes = {};
+                        param["card"] = []; // 空の配列
+                        for(let x in snapval){
+                            const path = snapval[x].img;
+                            counter1++;
+                            console.log(path);
+                            const storage = firebase.storage().ref(path);
+                            storage.getDownloadURL().then(function (url) {
+                                param["card"].push({name: path, url: url});
+                                console.log(url);
+                                counter2++;
+                            });
+                        }
+                        console.log(counter1);
+                    });
+                }
+            };
+            Button({
+                text: "ok",
+                fontSize: 30,
+            }
+            ).addChildTo(self).setPosition(self.gridX.span(13), self.gridY.span(14)).onpush = function () {
+                if (counter2 == counter1 & sel) {
+                    self.exit('Load', param);
+                }
             };
             i = i + 2;
         });
