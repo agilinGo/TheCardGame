@@ -2,6 +2,11 @@ phina.globalize();
 
 let ASSETS = {
     image: {
+        'rock' : './image/rock.jpg',
+    },
+};
+let ASSETS2 = {
+    image: {
         'scissors' : './image/scissors.jpg',
     },
 };
@@ -10,7 +15,6 @@ phina.define('GameScene', {
     superClass: 'phina.display.DisplayScene',
     init: function (param) {
         this.superInit(param);
-
         this.backgroundColor = 'lightblue';
         const self = this;
         //IDの生成
@@ -88,6 +92,7 @@ phina.define('GameScene', {
                 });
             }
         }
+        //document.write('<img src="./image/rock.jpg" width="104" height="91" />');
     },
 
     update: function () {
@@ -210,26 +215,21 @@ phina.define('RoomScene', {
             }
             ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(i)).onpush = function () {
                 if (!sel) {
-                    console.log(this);
                     this.fill = "pink";
                     sel = true;
                     param = { room: snapshot };
                     snapshot.child("/cards/").ref.once('value').then(function (snapshot2) {
                         const snapval = snapshot2.val();
-                        let pathes = {};
-                        param["card"] = []; // 空の配列
                         for(let x in snapval){
                             const path = snapval[x].img;
                             counter1++;
-                            console.log(path);
                             const storage = firebase.storage().ref(path);
                             storage.getDownloadURL().then(function (url) {
-                                param["card"].push({name: path, url: url});
                                 console.log(url);
+                                ASSETS["image"][path] = url;
                                 counter2++;
                             });
                         }
-                        console.log(counter1);
                     });
                 }
             };
@@ -238,33 +238,20 @@ phina.define('RoomScene', {
                 fontSize: 30,
             }
             ).addChildTo(self).setPosition(self.gridX.span(13), self.gridY.span(14)).onpush = function () {
+                this.text = "loading";
                 if (counter2 == counter1 & sel) {
-                    self.exit('Load', param);
+                    var loader = phina.asset.AssetLoader();
+                    loader.load(ASSETS);
+                    loader.on('load', function() {
+                        console.log("load");
+                        self.exit('Game', param);
+                    });
                 }
             };
             i = i + 2;
         });
 
     }
-});
-
-//assetのロード
-phina.define('MyLoadingScene', {
-    // デフォルトのLoadingSceneを継承
-    superClass: 'phina.game.LoadingScene',
-    // コンストラクタ
-    init: function (param) {
-  
-        for (let p in param["card"]){
-            ASSETS["image"][param["card"][p].name] = param["card"][p].url;
-        }
-        this.superInit(param);
-        // メソッド上書き
-        this.gauge.onfull = function () {
-            // 次のシーンへ
-            this.exit('Game', param);
-        }.bind(this);
-    },
 });
 
 //メイン処理
