@@ -2,7 +2,7 @@ phina.globalize();
 
 let ASSETS = {
     image: {
-        'rock' : './image/rock.jpg',
+        'title' : '../../Tramp/スクリーンショット 2018-11-01 15.10.56.png',
     },
 };
 
@@ -116,8 +116,13 @@ phina.define('TitleScene', {
     superClass: 'phina.display.DisplayScene',
     init: function () {
         this.superInit();
-        this.backgroundColor = 'lightblue';
+        this.backgroundColor = "rgb(8,85,1)";
         const self = this;
+
+        var shape = phina.display.Sprite("title");
+        shape.setPosition(this.gridX.center(), this.gridY.span(10));
+        shape.addChildTo(this);
+
         Button({
             text: "enter",
             fontSize: 60,
