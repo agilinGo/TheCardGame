@@ -17,6 +17,7 @@ phina.define('GameScene', {
         this.superInit(param);
         this.backgroundColor = 'lightblue';
         const self = this;
+        var Cards = [];
         //IDの生成
         var ID = Math.round(Math.random() * 1000000);
         var user = firebase.database().ref("/users").push({ id: ID });
@@ -31,38 +32,50 @@ phina.define('GameScene', {
         hand_field.setScale(10, 3);
         hand_field.fill = "pink";
         var hand = phina.geom.Rect(0, hand_field.y - hand_field.height / 2, hand_field.width * 10, hand_field.height * 10);
-
+        var i = 1;
+        var serect = null;
         // データベースからカード生成
         //親
         var group = DisplayElement().addChildTo(this);
 
         var poss = []; //場所の参照をまとめておく。
         //データベースからカードの生成
+        
         param.room.child("/cards/").ref.on("child_added", function (snapshot) {
+            
             var pos1 = snapshot.ref;
             poss.push(pos1);
             var img = snapshot.val().img;
-            var shape1 = phina.display.Sprite(img);
+            var shape1 = phina.display.Sprite(img);/*
+            Cards.push(Card(shape1,i,group));
+            i++;*/
+            
             var id1;
             shape1.addChildTo(group);
             shape1.setInteractive(true);
             //ドラック時処理
             shape1.on('pointmove', function (e) {
                 if (id1 == 0 || id1 == ID) {
-                    shape1.x += e.pointer.dx;
-                    shape1.y += e.pointer.dy;
-                    if (Collision.testRectRect(shape1, hand)) {
-                        pos1.update({ belong: ID, x: shape1.x, y: shape1.y });
-                    } else {
-                        pos1.update({ belong: 0, x: shape1.x, y: shape1.y });
+                    if(self.serect == this){                 
+                        shape1.x += e.pointer.dx;
+                        shape1.y += e.pointer.dy;
+                        if (Collision.testRectRect(shape1, hand)) {
+                            pos1.update({ belong: ID, x: shape1.x, y: shape1.y });
+                        } else {
+                            pos1.update({ belong: 0, x: shape1.x, y: shape1.y });
+                        }
                     }
                 }
             });
             shape1.on('pointstart', function (e) {
-                self.setRectInteraction();
+                //self.setRectInteraction();
+                self.serect = this;
+                this.remove();
+                shape1.addChildTo(group);
             });
             shape1.on('pointend', function (e) {
-                self.setRectInteraction();
+                //self.setRectInteraction();
+                self.serect = null;
             });
             //データベース書き換えた時の処理
             pos1.on("value", function (snapshot) {
@@ -76,8 +89,17 @@ phina.define('GameScene', {
                     shape1.setInteractive(false);
                 }
             });
+            shape1.update = function()
+            {
+                if(self.serect == null || self.serect == this)
+                {             
+                    shape1.setInteractive(true);
+                } else {
+                    shape1.setInteractive(false);
+                }
+            }
         });
-
+        
         this.group = group;
 
         //ウィンドウ消した時の処理
@@ -97,7 +119,7 @@ phina.define('GameScene', {
 
     update: function () {
     },
-
+    /*
     //重なりの処理
     setRectInteraction: function () {
         // 全体を一旦タッチ可能にする
@@ -114,8 +136,118 @@ phina.define('GameScene', {
                 }
             });
         });
-    }
-});
+    }*/
+});/*
+phina.define('Card', {
+    // 初期化
+    init: function(obj,b,c) {
+        // クラスメンバ 
+        let belong = 0;
+        let id = b;
+        let card = obj;
+        let start_X;
+        let start_Y;
+        let dir_X;
+        let dir_Y;
+        card.scaleX = 0.6;
+        card.scaleY = 0.6;
+        card.x = 250;
+        card.y = 300;      
+        card.setInteractive(true);
+        card.onpointstart = function(e) {
+          self.serect = this;
+          self.tauch = true;
+          this.remove();
+          card.addChildTo(c);        
+          start_X = e.pointer.x;
+          start_Y = e.pointer.y;                          
+        };
+        card.onpointend = function(e) {
+          dir_X = e.pointer.x - start_X;
+          dir_Y = e.pointer.y - start_Y;
+          if((dir_X > -0.01) && (dir_X < 0.01))
+          {
+            if((dir_X > -0.01) && (dir_X < 0.01))
+            {            
+              back.addChildTo(c);
+              this.remove();
+            }
+          }
+          self.serect = null;
+        };
+        card.on('pointmove', function(e) {
+            if (belong == 0 || belong == ID) {
+                if(self.serect == this) 
+                {
+                    card.x += e.pointer.dx;
+                    card.y += e.pointer.dy;
+                    back.x += e.pointer.dx;
+                    back.y += e.pointer.dy;
+                    if (Collision.testRectRect(obj, hand)) {
+                        pos1.update({ belong: id, x: card.x, y: card.y });
+                    } else {
+                        pos1.update({ belong: 0, x: card.x, y: card.y });
+                    } 
+                }        
+            }       
+          
+        });
+        card.update = function() 
+        {
+          if(self.serect == null || self.serect == this)
+          {
+            card.setInteractive(true);
+          } else {
+            card.setInteractive(false);
+          }
+        }
+        let back = obj;
+        back.scaleX = 0.6;
+        back.scaleY = 0.6;
+        back.x = 250;
+        back.y = 300;
+        back.addChildTo(c);
+        back.setInteractive(true); 
+        back.onpointstart = function(e) {
+          self.serect = this;
+          this.remove();
+          back.addChildTo(c);
+          start_X = e.pointer.x;
+          start_Y = e.pointer.y; 
+        };
+        back.onpointend = function(e) {
+          dir_X = e.pointer.x - start_X;
+          dir_Y = e.pointer.y - start_Y;
+          if(dir_X == 0)
+          {
+            if(dir_Y == 0)
+            {
+              card.addChildTo(c);
+              this.remove();
+            }
+          }
+          self.serect = null;
+        };
+        back.on('pointmove', function(e) {
+          if(self.serect == this) 
+          {
+            card.x += e.pointer.dx;
+            card.y += e.pointer.dy;
+            back.x += e.pointer.dx;
+            back.y += e.pointer.dy; 
+          }               
+        });
+        back.update = function()
+        {
+          if(self.serect == null || self.serect == this)
+          {          
+            back.setInteractive(true);
+          } else {
+            back.setInteractive(false);
+          }
+        }
+    },
+});*/
 
 //タイトルメニュー
 phina.define('TitleScene', {
@@ -146,8 +278,7 @@ phina.define('MakeScene', {
     init: function () {
         this.superInit();
         this.backgroundColor = 'lightblue';
-        self = this;
-
+        self = this; 
         var myroom = firebase.database().ref("/room/").push({
             name: "myroom",
             cards: {
@@ -167,8 +298,6 @@ phina.define('MakeScene', {
                 }
             }
         });
-
-        var param = { room: myroom };
         
         myroom.child("/cards/").ref.once('value').then(function (snapshot) {
             const snapval = snapshot.val();
