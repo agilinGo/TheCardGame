@@ -34,41 +34,41 @@ phina.define('GameScene', {
         var poss = []; //場所の参照をまとめておく。
         //データベースからカードの生成
         param.room.child("/cards/").ref.on("child_added", function (snapshot) {
-            var pos1 = snapshot.ref;
-            poss.push(pos1);
+            var pos = snapshot.ref;
+            poss.push(pos);
             var img = snapshot.val().img;
-            var shape1 = phina.display.Sprite(img);
+            var shape = phina.display.Sprite(img);
             var id1;
-            shape1.addChildTo(group);
-            shape1.setInteractive(true);
+            shape.addChildTo(group);
+            shape.setInteractive(true);
             //ドラック時処理
-            shape1.on('pointmove', function (e) {
+            shape.on('pointmove', function (e) {
                 if (id1 == 0 || id1 == ID) {
-                    shape1.x += e.pointer.dx;
-                    shape1.y += e.pointer.dy;
-                    if (Collision.testRectRect(shape1, hand)) {
-                        pos1.update({ belong: ID, x: shape1.x, y: shape1.y });
+                    shape.x += e.pointer.dx;
+                    shape.y += e.pointer.dy;
+                    if (Collision.testRectRect(shape, hand)) {
+                        pos.update({ belong: ID, x: shape.x, y: shape.y });
                     } else {
-                        pos1.update({ belong: 0, x: shape1.x, y: shape1.y });
+                        pos.update({ belong: 0, x: shape.x, y: shape.y });
                     }
                 }
             });
-            shape1.on('pointstart', function (e) {
+            shape.on('pointstart', function (e) {
                 self.setRectInteraction();
             });
-            shape1.on('pointend', function (e) {
+            shape.on('pointend', function (e) {
                 self.setRectInteraction();
             });
             //データベース書き換えた時の処理
-            pos1.on("value", function (snapshot) {
+            pos.on("value", function (snapshot) {
                 id1 = snapshot.val().belong;
-                shape1.setPosition(snapshot.val().x, snapshot.val().y);
+                shape.setPosition(snapshot.val().x, snapshot.val().y);
                 if (id1 == 0 || id1 == ID) {
-                    shape1.show();
-                    shape1.setInteractive(true);
+                    shape.show();
+                    shape.setInteractive(true);
                 } else {
-                    shape1.hide();
-                    shape1.setInteractive(false);
+                    shape.hide();
+                    shape.setInteractive(false);
                 }
             });
         });
@@ -87,7 +87,6 @@ phina.define('GameScene', {
                 });
             }
         }
-        //document.write('<img src="./image/rock.jpg" width="104" height="91" />');
     },
 
     update: function () {
@@ -201,8 +200,6 @@ phina.define('RoomScene', {
         this.backgroundColor = 'lightblue';
         const self = this;
         var i = 2;
-        var counter1 = 0;
-        var counter2 = 0;
         var sel = false;
         var param;
         firebase.database().ref("/room").on("child_added", function (snapshot) {
