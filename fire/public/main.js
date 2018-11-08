@@ -116,7 +116,7 @@ phina.define('TitleScene', {
     superClass: 'phina.display.DisplayScene',
     init: function () {
         this.superInit();
-        this.backgroundColor = "rgb(8,85,1)";
+        this.backgroundColor = "rgb(39,86,3)";
         const self = this;
 
         var shape = phina.display.Sprite("title");
