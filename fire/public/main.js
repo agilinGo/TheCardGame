@@ -5,11 +5,6 @@ let ASSETS = {
         'rock' : './image/rock.jpg',
     },
 };
-let ASSETS2 = {
-    image: {
-        'scissors' : './image/scissors.jpg',
-    },
-};
 
 phina.define('GameScene', {
     superClass: 'phina.display.DisplayScene',
@@ -141,13 +136,13 @@ phina.define('TitleScene', {
     }
 });
 
+//ルーム作成
 phina.define('MakeScene', {
     superClass: 'phina.display.DisplayScene',
     init: function () {
         this.superInit();
         this.backgroundColor = 'lightblue';
         self = this;
-
         var myroom = firebase.database().ref("/room/").push({
             name: "myroom",
             cards: {
@@ -178,20 +173,23 @@ phina.define('MakeScene', {
                 const path = snapval[x].img;  
                 const storage = firebase.storage().ref(path);
                 storage.getDownloadURL().then(function (url) {
-                    param["card"].push({name: path, url: url});
+                    ASSETS["image"][path] = url;
                 });
             }
         });
 
         Button({
-            text: "name",
+            text: "make",
             fontSize: 30,
         }
-        ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(2)).onpush = function () {
-            self.exit('Load', param);
+        ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(4)).onpush = function () {
+            var loader = phina.asset.AssetLoader();
+            loader.load(ASSETS);
+            loader.on('load', function() {
+                console.log("load");
+                self.exit('Game', param);
+            });
         };
-
-
     }
 });
 
@@ -218,33 +216,30 @@ phina.define('RoomScene', {
                     this.fill = "pink";
                     sel = true;
                     param = { room: snapshot };
-                    snapshot.child("/cards/").ref.once('value').then(function (snapshot2) {
-                        const snapval = snapshot2.val();
-                        for(let x in snapval){
-                            const path = snapval[x].img;
-                            counter1++;
-                            const storage = firebase.storage().ref(path);
-                            storage.getDownloadURL().then(function (url) {
-                                console.log(url);
-                                ASSETS["image"][path] = url;
-                                counter2++;
-                            });
-                        }
-                    });
-                }
-            };
-            Button({
-                text: "ok",
-                fontSize: 30,
-            }
-            ).addChildTo(self).setPosition(self.gridX.span(13), self.gridY.span(14)).onpush = function () {
-                this.text = "loading";
-                if (counter2 == counter1 & sel) {
-                    var loader = phina.asset.AssetLoader();
-                    loader.load(ASSETS);
-                    loader.on('load', function() {
-                        console.log("load");
-                        self.exit('Game', param);
+                    snapshot.child("/cards/").ref.once('value').then(async function (snapshot2) {
+                        const snapval = snapshot2.val();                                       
+                        const ret =  Promise.all(                      
+                            Object.keys(snapval).map(async (x) => {
+                                const path    = snapval[x].img;
+                                const storage = firebase.storage().ref(path);
+                                const url     = await storage.getDownloadURL();                                                           
+                                return [path, url];
+                        }));   
+                        return ret;
+                    }).then((xs) => {                                                
+                        xs.forEach((x) => {
+                            const path = x[0];
+                            const url  = x[1];
+                            ASSETS["image"][path] = url;
+                            console.log(url);
+                        });    
+                        console.log(xs); 
+                        var loader = phina.asset.AssetLoader();
+                        loader.load(ASSETS);
+                        loader.on('load', function() {
+                            console.log("load");
+                            self.exit('Game', param);
+                        });                     
                     });
                 }
             };
