@@ -147,8 +147,9 @@ phina.define('MakeScene', {
         this.superInit();
         this.backgroundColor = 'lightblue';
         self = this;
+        var rnd = Math.round(Math.random() * 1000000);
         var myroom = firebase.database().ref("/room/").push({
-            name: "myroom",
+            name: "myroom"+rnd,
             cards: {
                 c1: {
                     belong: 0,
@@ -163,7 +164,35 @@ phina.define('MakeScene', {
                     img: "/paper.jpg",
                     x: 200,
                     y: 100
-                }
+                },
+                c3: {
+                    belong: 0,
+                    id: 3,
+                    img: "/scissors.jpg",
+                    x: 200,
+                    y: 100
+                },
+                c4: {
+                    belong: 0,
+                    id: 4,
+                    img: "/rock.jpg",
+                    x: 200,
+                    y: 100
+                },
+                c5: {
+                    belong: 0,
+                    id: 5,
+                    img: "/paper.jpg",
+                    x: 200,
+                    y: 100
+                },
+                c6: {
+                    belong: 0,
+                    id: 6,
+                    img: "/scissors.jpg",
+                    x: 200,
+                    y: 100
+                },
             }
         });
 
