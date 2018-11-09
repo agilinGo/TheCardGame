@@ -324,6 +324,8 @@ phina.define('MakeScene', {
             }
         });
         
+        var param = { room: myroom };
+
         myroom.child("/cards/").ref.once('value').then(function (snapshot) {
             const snapval = snapshot.val();
             let pathes = {};
