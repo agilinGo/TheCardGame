@@ -29,13 +29,18 @@ phina.define('GameScene', {
         var hand = phina.geom.Rect(0, hand_field.y - hand_field.height / 2, hand_field.width * 10, hand_field.height * 10);
         var i = 1;
         var serect = null;
+        //部屋名の表示
+        param.room.ref.once('value').then(function (snapshot) {
+            var label = phina.display.Label({ text:  snapshot.val().name});
+            label.addChildTo(self);
+            label.setPosition(320, 80);
+        });
+
         // データベースからカード生成
         //親
         var group = DisplayElement().addChildTo(this);
-
         var poss = []; //場所の参照をまとめておく。
-        //データベースからカードの生成
-        
+
         param.room.child("/cards/").ref.on("child_added", function (snapshot) {
             var pos = snapshot.ref;
             poss.push(pos);
@@ -80,13 +85,13 @@ phina.define('GameScene', {
                     shape.setInteractive(false);
                 }
             });
-            shape1.update = function()
+            shape.update = function()
             {
                 if(self.serect == null || self.serect == this)
                 {             
-                    shape1.setInteractive(true);
+                    shape.setInteractive(true);
                 } else {
-                    shape1.setInteractive(false);
+                    shape.setInteractive(false);
                 }
             }
         });
@@ -275,9 +280,9 @@ phina.define('MakeScene', {
         this.superInit();
         this.backgroundColor = 'lightblue';
         self = this;
-        var rnd = Math.round(Math.random() * 1000000);
+        var rnd = Math.round(Math.random() * 100000);
         var myroom = firebase.database().ref("/room/").push({
-            name: "myroom"+rnd,
+            name: "room"+rnd,
             cards: {
                 c1: {
                     belong: 0,
