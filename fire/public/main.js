@@ -255,6 +255,8 @@ phina.define('TitleScene', {
         var shape = phina.display.Sprite("title");
         shape.setPosition(this.gridX.center(), this.gridY.span(10));
         shape.addChildTo(this);
+    
+        var bool = false;
 
         Button({
             text: "enter",
@@ -263,13 +265,44 @@ phina.define('TitleScene', {
         ).addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(10)).onpush = function () {
             self.exit('Room');
         };
-        Button({
+        console.log("make");
+        var make = Button({
             text: "make",
             fontSize: 60,
-        }
-        ).addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(12)).onpush = function () {
-            self.exit('Make');
+            fill: "gray",
+        });
+        make.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(12)).onpush = function () {
+            console.log(bool);
+            if (bool) {
+                self.exit('Make');
+            }
         };
+        firebase.database().ref("/image").once('value').then(async function (snapshot) {
+            const snapval = snapshot.val();
+            const ret =  Promise.all(                      
+                Object.keys(snapval).map(async (x) => {
+                    const path    = snapval[x].name;
+                    const storage = firebase.storage().ref(path);
+                    const url     = await storage.getDownloadURL();   
+                    return [path, url];
+            }));   
+            return ret;
+        }).then((xs) => {                                                
+            xs.forEach((x) => {
+                const path = x[0];
+                const url  = x[1];
+                ASSETS["image"][path] = url;
+                console.log(url);
+            });
+            console.log(xs); 
+            var loader = phina.asset.AssetLoader();
+            loader.load(ASSETS);
+            loader.on('load', function() {
+                console.log("load");
+                bool = true;
+                make.fill = "MediumTurquoise"
+            });                     
+        });
     }
 });
 
@@ -281,80 +314,52 @@ phina.define('MakeScene', {
         this.backgroundColor = 'lightblue';
         self = this;
         var rnd = Math.round(Math.random() * 100000);
-        var myroom = firebase.database().ref("/room/").push({
-            name: "room"+rnd,
-            cards: {
-                c1: {
-                    belong: 0,
-                    id: 1,
-                    img: "/rock.jpg",
-                    x: 100,
-                    y: 100
-                },
-                c2: {
-                    belong: 0,
-                    id: 2,
-                    img: "/paper.jpg",
-                    x: 200,
-                    y: 100
-                },
-                c3: {
-                    belong: 0,
-                    id: 3,
-                    img: "/scissors.jpg",
-                    x: 200,
-                    y: 100
-                },
-                c4: {
-                    belong: 0,
-                    id: 4,
-                    img: "/rock.jpg",
-                    x: 200,
-                    y: 100
-                },
-                c5: {
-                    belong: 0,
-                    id: 5,
-                    img: "/paper.jpg",
-                    x: 200,
-                    y: 100
-                },
-                c6: {
-                    belong: 0,
-                    id: 6,
-                    img: "/scissors.jpg",
-                    x: 200,
-                    y: 100
-                },
-            }
-        });
-        
-        var param = { room: myroom };
 
-        myroom.child("/cards/").ref.once('value').then(function (snapshot) {
-            const snapval = snapshot.val();
-            let pathes = {};
-            param["card"] = []; // 空の配列            
-            for(let x in snapval){
-                const path = snapval[x].img;  
-                const storage = firebase.storage().ref(path);
-                storage.getDownloadURL().then(function (url) {
-                    ASSETS["image"][path] = url;
-                });
+        var cards = [];
+        var x = 2;
+        var y = 2;
+        for ( a in ASSETS.image) {
+            if (a == "title" || a == "bk0") {
+                continue;
+
             }
-        });
+            var card = phina.display.Sprite(a);
+            card.addChildTo(self).setInteractive(true).setPosition(self.gridX.span(x), self.gridY.span(y));
+            x += 2;
+            if (x == 16){
+                x = 2;
+                y += 2;
+            }
+            card.on('pointend', function (e) {
+                //self.setRectInteraction();
+                console.log(this._image.src);
+                const result = Object.keys(ASSETS.image).filter( (key) => {
+                    return ASSETS.image[key] === this._image.src;
+                });
+                cards.push(result);
+            });
+        }
 
         Button({
             text: "make",
             fontSize: 30,
         }
-        ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(4)).onpush = function () {
-            var loader = phina.asset.AssetLoader();
-            loader.load(ASSETS);
-            loader.on('load', function() {
-                console.log("load");
-                self.exit('Game', param);
+        ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(15)).onpush = function () {
+            var myroom = firebase.database().ref("/room/").push({
+                name: "room"+rnd
             });
+            var param = { room: myroom };
+            for (i in cards) {
+                myroom.child("/cards/").ref.push({
+                    belong: 0,
+                    id: i,
+                    img: cards[i][0],
+                    x: 100,
+                    y: 100
+                });
+            }
+            console.log("go");
+            self.exit('Game', param);
         };
     }
 });

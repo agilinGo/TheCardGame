@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>aa01</title>
+</head>
+<body>
+<button id='m_500'>500 M</button>
+<hr />
+<div id="outarea_aa">outarea_aa</div>
+<script language="JavaScript" type="text/javascript">// <!&#91;CDATA&#91;
+function getRes() {
+    var obj = new XMLHttpRequest();
+    obj.open('POST', './test.php', true);
+    obj.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    obj.send('data=送信するデータ');
+    obj.onreadystatechange = function() {
+        if (obj.readyState == 4) {
+            var res = obj.responseText;
+            alert(res);
+        }
+    }
+}
+// &#93;&#93;></script>
+<form>
+<input type="button" value="サーバにデータ送信&折り返し受信" onclick="getRes();" />
+</form>
+<hr />
+Feb/15/2018<p />
+</body>
+</html>
