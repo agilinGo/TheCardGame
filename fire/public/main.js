@@ -111,7 +111,138 @@ phina.define('GameScene', {
             }
         }
     },
-});
+
+    update: function () {
+    },
+    /*
+    //重なりの処理
+    setRectInteraction: function () {
+        // 全体を一旦タッチ可能にする
+        this.group.children.each(function (rect) {
+            rect.setInteractive(true);
+        });
+        var self = this;
+        // グループ総当たりで重なり具合に応じてタッチ可否を設定する
+        this.group.children.each(function (rect, i) {
+            self.group.children.each(function (target, j) {
+                // 重なっていて表示順が下のターゲットはタッチ不可にする
+                if (Collision.testRectRect(rect, target) && j < i) {
+                    target.setInteractive(false);
+                }
+            });
+        });
+    }*/
+});/*
+phina.define('Card', {
+    // 初期化
+    init: function(obj,b,c) {
+        // クラスメンバ 
+        let belong = 0;
+        let id = b;
+        let card = obj;
+        let start_X;
+        let start_Y;
+        let dir_X;
+        let dir_Y;
+        card.scaleX = 0.6;
+        card.scaleY = 0.6;
+        card.x = 250;
+        card.y = 300;      
+        card.setInteractive(true);
+        card.onpointstart = function(e) {
+          self.serect = this;
+          self.tauch = true;
+          this.remove();
+          card.addChildTo(c);        
+          start_X = e.pointer.x;
+          start_Y = e.pointer.y;                          
+        };
+        card.onpointend = function(e) {
+          dir_X = e.pointer.x - start_X;
+          dir_Y = e.pointer.y - start_Y;
+          if((dir_X > -0.01) && (dir_X < 0.01))
+          {
+            if((dir_X > -0.01) && (dir_X < 0.01))
+            {            
+              back.addChildTo(c);
+              this.remove();
+            }
+          }
+          self.serect = null;
+        };
+        card.on('pointmove', function(e) {
+            if (belong == 0 || belong == ID) {
+                if(self.serect == this) 
+                {
+                    card.x += e.pointer.dx;
+                    card.y += e.pointer.dy;
+                    back.x += e.pointer.dx;
+                    back.y += e.pointer.dy;
+                    if (Collision.testRectRect(obj, hand)) {
+                        pos1.update({ belong: id, x: card.x, y: card.y });
+                    } else {
+                        pos1.update({ belong: 0, x: card.x, y: card.y });
+                    } 
+                }        
+            }       
+          
+        });
+        card.update = function() 
+        {
+          if(self.serect == null || self.serect == this)
+          {
+            card.setInteractive(true);
+          } else {
+            card.setInteractive(false);
+          }
+        }
+        let back = obj;
+        back.scaleX = 0.6;
+        back.scaleY = 0.6;
+        back.x = 250;
+        back.y = 300;
+        back.addChildTo(c);
+        back.setInteractive(true); 
+        back.onpointstart = function(e) {
+          self.serect = this;
+          this.remove();
+          back.addChildTo(c);
+          start_X = e.pointer.x;
+          start_Y = e.pointer.y; 
+        };
+        back.onpointend = function(e) {
+          dir_X = e.pointer.x - start_X;
+          dir_Y = e.pointer.y - start_Y;
+          if(dir_X == 0)
+          {
+            if(dir_Y == 0)
+            {
+              card.addChildTo(c);
+              this.remove();
+            }
+          }
+          self.serect = null;
+        };
+        back.on('pointmove', function(e) {
+          if(self.serect == this) 
+          {
+            card.x += e.pointer.dx;
+            card.y += e.pointer.dy;
+            back.x += e.pointer.dx;
+            back.y += e.pointer.dy; 
+          }               
+        });
+        back.update = function()
+        {
+          if(self.serect == null || self.serect == this)
+          {          
+            back.setInteractive(true);
+          } else {
+            back.setInteractive(false);
+          }
+        }
+    },
+});*/
 
 //タイトルメニュー
 phina.define('TitleScene', {
@@ -190,6 +321,7 @@ phina.define('MakeScene', {
         for ( a in ASSETS.image) {
             if (a == "title" || a == "bk0") {
                 continue;
+
             }
             var card = phina.display.Sprite(a);
             card.addChildTo(self).setInteractive(true).setPosition(self.gridX.span(x), self.gridY.span(y));
@@ -207,54 +339,6 @@ phina.define('MakeScene', {
                 cards.push(result);
             });
         }
-
-        // var myroom = firebase.database().ref("/room/").push({
-        //     name: "room"+rnd,
-        //     cards: {
-        //         c1: {
-        //             belong: 0,
-        //             id: 1,
-        //             img: "/rock.jpg",
-        //             x: 100,
-        //             y: 100
-        //         },
-        //         c2: {
-        //             belong: 0,
-        //             id: 2,
-        //             img: "/paper.jpg",
-        //             x: 200,
-        //             y: 100
-        //         },
-        //         c3: {
-        //             belong: 0,
-        //             id: 3,
-        //             img: "/scissors.jpg",
-        //             x: 200,
-        //             y: 100
-        //         },
-        //         c4: {
-        //             belong: 0,
-        //             id: 4,
-        //             img: "/rock.jpg",
-        //             x: 200,
-        //             y: 100
-        //         },
-        //         c5: {
-        //             belong: 0,
-        //             id: 5,
-        //             img: "/paper.jpg",
-        //             x: 200,
-        //             y: 100
-        //         },
-        //         c6: {
-        //             belong: 0,
-        //             id: 6,
-        //             img: "/scissors.jpg",
-        //             x: 200,
-        //             y: 100
-        //         },
-        //     }
-        // });
 
         Button({
             text: "make",
