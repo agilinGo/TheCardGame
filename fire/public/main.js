@@ -185,18 +185,18 @@ phina.define('MakeScene', {
         var rnd = Math.round(Math.random() * 100000);
 
         var cards = [];
-        var x = 2;
-        var y = 2;
+        var x = 1.5;
+        var y = 1.5;
         for ( a in ASSETS.image) {
             if (a == "title" || a == "bk0") {
                 continue;
             }
             var card = phina.display.Sprite(a);
             card.addChildTo(self).setInteractive(true).setPosition(self.gridX.span(x), self.gridY.span(y));
-            x += 2;
-            if (x == 16){
-                x = 2;
-                y += 2;
+            x += 1.5;
+            if (x >= 16){
+                x = 1.5;
+                y += 1.5;
             }
             card.on('pointend', function (e) {
                 //self.setRectInteraction();
