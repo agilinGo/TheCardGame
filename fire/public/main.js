@@ -111,7 +111,138 @@ phina.define('GameScene', {
             }
         }
     },
-});
+
+    update: function () {
+    },
+    /*
+    //重なりの処理
+    setRectInteraction: function () {
+        // 全体を一旦タッチ可能にする
+        this.group.children.each(function (rect) {
+            rect.setInteractive(true);
+        });
+        var self = this;
+        // グループ総当たりで重なり具合に応じてタッチ可否を設定する
+        this.group.children.each(function (rect, i) {
+            self.group.children.each(function (target, j) {
+                // 重なっていて表示順が下のターゲットはタッチ不可にする
+                if (Collision.testRectRect(rect, target) && j < i) {
+                    target.setInteractive(false);
+                }
+            });
+        });
+    }*/
+});/*
+phina.define('Card', {
+    // 初期化
+    init: function(obj,b,c) {
+        // クラスメンバ 
+        let belong = 0;
+        let id = b;
+        let card = obj;
+        let start_X;
+        let start_Y;
+        let dir_X;
+        let dir_Y;
+        card.scaleX = 0.6;
+        card.scaleY = 0.6;
+        card.x = 250;
+        card.y = 300;      
+        card.setInteractive(true);
+        card.onpointstart = function(e) {
+          self.serect = this;
+          self.tauch = true;
+          this.remove();
+          card.addChildTo(c);        
+          start_X = e.pointer.x;
+          start_Y = e.pointer.y;                          
+        };
+        card.onpointend = function(e) {
+          dir_X = e.pointer.x - start_X;
+          dir_Y = e.pointer.y - start_Y;
+          if((dir_X > -0.01) && (dir_X < 0.01))
+          {
+            if((dir_X > -0.01) && (dir_X < 0.01))
+            {            
+              back.addChildTo(c);
+              this.remove();
+            }
+          }
+          self.serect = null;
+        };
+        card.on('pointmove', function(e) {
+            if (belong == 0 || belong == ID) {
+                if(self.serect == this) 
+                {
+                    card.x += e.pointer.dx;
+                    card.y += e.pointer.dy;
+                    back.x += e.pointer.dx;
+                    back.y += e.pointer.dy;
+                    if (Collision.testRectRect(obj, hand)) {
+                        pos1.update({ belong: id, x: card.x, y: card.y });
+                    } else {
+                        pos1.update({ belong: 0, x: card.x, y: card.y });
+                    } 
+                }        
+            }       
+          
+        });
+        card.update = function() 
+        {
+          if(self.serect == null || self.serect == this)
+          {
+            card.setInteractive(true);
+          } else {
+            card.setInteractive(false);
+          }
+        }
+        let back = obj;
+        back.scaleX = 0.6;
+        back.scaleY = 0.6;
+        back.x = 250;
+        back.y = 300;
+        back.addChildTo(c);
+        back.setInteractive(true); 
+        back.onpointstart = function(e) {
+          self.serect = this;
+          this.remove();
+          back.addChildTo(c);
+          start_X = e.pointer.x;
+          start_Y = e.pointer.y; 
+        };
+        back.onpointend = function(e) {
+          dir_X = e.pointer.x - start_X;
+          dir_Y = e.pointer.y - start_Y;
+          if(dir_X == 0)
+          {
+            if(dir_Y == 0)
+            {
+              card.addChildTo(c);
+              this.remove();
+            }
+          }
+          self.serect = null;
+        };
+        back.on('pointmove', function(e) {
+          if(self.serect == this) 
+          {
+            card.x += e.pointer.dx;
+            card.y += e.pointer.dy;
+            back.x += e.pointer.dx;
+            back.y += e.pointer.dy; 
+          }               
+        });
+        back.update = function()
+        {
+          if(self.serect == null || self.serect == this)
+          {          
+            back.setInteractive(true);
+          } else {
+            back.setInteractive(false);
+          }
+        }
+    },
+});*/
 
 //タイトルメニュー
 phina.define('TitleScene', {
@@ -137,33 +268,7 @@ phina.define('TitleScene', {
             fontSize: 60,
         }
         ).addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(12)).onpush = function () {
-            
-            firebase.database().ref("/image").once('value').then(async function (snapshot) {
-                const snapval = snapshot.val();
-                console.log(snapval[0]);
-                const ret =  Promise.all(                      
-                    Object.keys(snapval).map(async (x) => {
-                        const path    = snapval[x].name;
-                        const storage = firebase.storage().ref(path);
-                        const url     = await storage.getDownloadURL();   
-                        return [path, url];
-                }));   
-                return ret;
-            }).then((xs) => {                                                
-                xs.forEach((x) => {
-                    const path = x[0];
-                    const url  = x[1];
-                    ASSETS["image"][path] = url;
-                    console.log(url);
-                });    
-                console.log(xs); 
-                var loader = phina.asset.AssetLoader();
-                loader.load(ASSETS);
-                loader.on('load', function() {
-                    console.log("load");
-                    self.exit('Make');
-                });                     
-            });
+            self.exit('Make');
         };
     }
 });
@@ -176,21 +281,6 @@ phina.define('MakeScene', {
         this.backgroundColor = 'lightblue';
         self = this;
         var rnd = Math.round(Math.random() * 100000);
-
-        // var loader2 = phina.asset.AssetLoader();
-        // firebase.database().ref("/image").on("child_added", function (snapshot) {
-        //     firebase.storage().ref(snapshot.val().name).getDownloadURL().then(function(url) {
-        //         ASSETS["image"][snapshot.val().name] = url;
-        //         loader2.load(ASSETS);
-        //         console.log(snapshot.val().name);
-        //         console.log(ASSETS);
-        //         self.exit('Make', param);
-        //     });
-        // });
-
-        var shape = phina.display.Sprite("/rock.jpg");
-        shape.addChildTo(self);
-
         var myroom = firebase.database().ref("/room/").push({
             name: "room"+rnd,
             cards: {
@@ -241,31 +331,30 @@ phina.define('MakeScene', {
         
         var param = { room: myroom };
 
-        // myroom.child("/cards/").ref.once('value').then(function (snapshot) {
-        //     const snapval = snapshot.val();
-        //     let pathes = {};
-        //     param["card"] = []; // 空の配列            
-        //     for(let x in snapval){
-        //         const path = snapval[x].img;  
-        //         const storage = firebase.storage().ref(path);
-        //         storage.getDownloadURL().then(function (url) {
-        //             ASSETS["image"][path] = url;
-        //         });
-        //     }
-        // });
+        myroom.child("/cards/").ref.once('value').then(function (snapshot) {
+            const snapval = snapshot.val();
+            let pathes = {};
+            param["card"] = []; // 空の配列            
+            for(let x in snapval){
+                const path = snapval[x].img;  
+                const storage = firebase.storage().ref(path);
+                storage.getDownloadURL().then(function (url) {
+                    ASSETS["image"][path] = url;
+                });
+            }
+        });
 
         Button({
             text: "make",
             fontSize: 30,
         }
-        ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(15)).onpush = function () {
-            // var loader = phina.asset.AssetLoader();
-            // loader.load(ASSETS);
-            // loader.on('load', function() {
-            //     console.log("load");
-            //     self.exit('Game', param);
-            // });
-            self.exit('Make', param);
+        ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(4)).onpush = function () {
+            var loader = phina.asset.AssetLoader();
+            loader.load(ASSETS);
+            loader.on('load', function() {
+                console.log("load");
+                self.exit('Game', param);
+            });
         };
     }
 });
