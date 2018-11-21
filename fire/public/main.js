@@ -50,6 +50,7 @@ phina.define('GameScene', {
             shape.addChildTo(group);
             shape.setInteractive(true);
         //ドラック時処理
+        //データベースの位置を書き換える
             shape.on('pointmove', function (e) {
                 if (id1 == 0 || id1 == ID) {
                     if(self.serect == this){                 
@@ -63,17 +64,21 @@ phina.define('GameScene', {
                     }
                 }
             });
+        //わからないから誰か書き換えて
+        //おそらく押された中の１つだけを動くようにして一番上に持ってきてる
             shape.on('pointstart', function (e) {
                 //self.setRectInteraction();
                 self.serect = this;
                 this.remove();
                 shape.addChildTo(group);
             });
+        //わからないから誰か書き換えて
             shape.on('pointend', function (e) {
                 //self.setRectInteraction();
                 self.serect = null;
             });
         //データベース書き換えた時の処理
+        //位置をデータベースから反映する
             pos.on("value", function (snapshot) {
                 id1 = snapshot.val().belong;
                 shape.setPosition(snapshot.val().x, snapshot.val().y);
@@ -85,10 +90,10 @@ phina.define('GameScene', {
                     shape.setInteractive(false);
                 }
             });
-            shape.update = function()
-            {
-                if(self.serect == null || self.serect == this)
-                {             
+        //わからないから誰か書き換えて
+        //一番上じゃなかったら触れなくする
+            shape.update = function() {
+                if (self.serect == null || self.serect == this) {             
                     shape.setInteractive(true);
                 } else {
                     shape.setInteractive(false);
@@ -122,7 +127,7 @@ phina.define('TitleScene', {
     init: function () {
         this.superInit();
         const self = this;
-    //タイトルをデコる
+    //タイトルを素敵にデコる
         this.backgroundColor = "rgb(39,86,3)";
         var shape = phina.display.Sprite("title");
         shape.setPosition(this.gridX.center(), this.gridY.span(10));
@@ -149,7 +154,7 @@ phina.define('TitleScene', {
                 self.exit('Make');
             }
         };
-    //タイトル画面で全ての画像をダウンロードします。無駄です
+    //タイトル画面で全ての画像をダウンロードします。解決策求む
         firebase.database().ref("/image").once('value').then(async function (snapshot) {
             const snapval = snapshot.val();
             const ret =  Promise.all(                      
@@ -189,6 +194,7 @@ phina.define('MakeScene', {
         var rnd = Math.round(Math.random() * 100000);
 
     //選ぶためにカードを全部表示していく。
+    //選ばれたカードは自分の画像を表示用の配列に入れます。
         var cards = [];
         var x = 1.5;
         var y = 1.5;
@@ -214,15 +220,17 @@ phina.define('MakeScene', {
             });
         }
     //ボタン
+    //押されたらデータベースに部屋情報を書き込む
         Button({
             text: "make",
             fontSize: 30,
         }
         ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(15)).onpush = function () {
+        //部屋名    
             var myroom = firebase.database().ref("/room/").push({
                 name: "room"+rnd
             });
-            var param = { room: myroom };
+        //カード
             for (i in cards) {
                 myroom.child("/cards/").ref.push({
                     belong: 0,
@@ -232,6 +240,7 @@ phina.define('MakeScene', {
                     y: 100
                 });
             }
+            var param = { room: myroom };
             self.exit('Game', param);
         };
     }
@@ -258,7 +267,7 @@ phina.define('RoomScene', {
                     this.fill = "pink";
                     sel = true;
                     var param = { room: snapshot };
-                //ルームのカードをダウンロードして終わったらスタート。
+                //ルームのカードをダウンロードして終わったらゲームシーンに移動する
                     snapshot.child("/cards/").ref.once('value').then(async function (snapshot2) {
                         const snapval = snapshot2.val();                                       
                         const ret =  Promise.all(                      
