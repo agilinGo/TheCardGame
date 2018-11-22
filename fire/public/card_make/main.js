@@ -4,20 +4,10 @@ window.addEventListener('load', () => {
     const canvas = document.querySelector('#draw-area');
     // contextを使ってcanvasに絵を書いていく
     const context = canvas.getContext('2d');
+    
     // 直前のマウスのcanvas上のx座標とy座標を記録する
     const lastPosition = { x: null, y: null };
-    
-    //スマホでの処理
-    canvas.ontouchstart = function (e) {
-        e.preventDefault();
-        context.moveTo(e.touches[0].pageX, e.touches[0].pageY);
-    };
-    canvas.ontouchmove = function (e) {
-        context.lineTo(e.touches[0].pageX, e.touches[0].pageY);
-        context.stroke();
-    };
 
-    
     // マウスがドラッグされているか(クリックされたままか)判断するためのフラグ
     let isDrag = false;
 
@@ -66,6 +56,66 @@ window.addEventListener('load', () => {
         lastPosition.x = x;
         lastPosition.y = y;
     }
+    //スマホ用
+	var finger=new Array;
+	for(var i=0;i<10;i++){
+		finger[i]={
+			x:0,y:0,x1:0,y1:0,
+			color:"rgb("
+			+Math.floor(Math.random()*16)*15+","
+			+Math.floor(Math.random()*16)*15+","
+			+Math.floor(Math.random()*16)*15
+			+")"
+		};
+	}
+
+	//タッチした瞬間座標を取得
+	canvas.addEventListener("touchstart",function(e){
+		e.preventDefault();
+		var rect = e.target.getBoundingClientRect();
+		context.lineWidth = document.getElementById("lineWidth").value;
+		context.globalAlpha = document.getElementById("alpha").value/100;
+		undoImage = context.getImageData(0, 0,canvas.width,canvas.height);
+		for(var i=0;i<finger.length;i++){
+			finger[i].x1 = e.touches[i].clientX-rect.left;
+			finger[i].y1 = e.touches[i].clientY-rect.top;
+
+
+
+		}
+	});
+
+	//タッチして動き出したら描画
+	canvas.addEventListener("touchmove",function(e){
+		e.preventDefault();
+		var rect = e.target.getBoundingClientRect();
+		for(var i=0;i<finger.length;i++){
+			finger[i].x = e.touches[i].clientX-rect.left;
+			finger[i].y = e.touches[i].clientY-rect.top;
+			context.beginPath();
+			context.moveTo(finger[i].x1,finger[i].y1);
+			context.lineTo(finger[i].x,finger[i].y);
+			context.lineCap="round";
+			context.stroke();
+			finger[i].x1=finger[i].x;
+			finger[i].y1=finger[i].y;
+
+		}
+	});
+    
+    /*
+	//線の太さの値を変える
+    lineWidth.addEventListener("touchmove",function(){
+        var lineNum = document.getElementById("lineWidth").value;
+        document.getElementById("lineNum").innerHTML = lineNum;
+    });
+
+    //透明度の値を変える
+    alpha.addEventListener("touchmove",function(){
+        var alphaNum = document.getElementById("alpha").value;
+        document.getElementById("alphaNum").innerHTML = alphaNum;
+    });
+    */
     //メニューに戻る
     function r_menu(){
         window.location.href = '../index.html';
