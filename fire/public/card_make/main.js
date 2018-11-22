@@ -66,7 +66,10 @@ window.addEventListener('load', () => {
         lastPosition.x = x;
         lastPosition.y = y;
     }
-
+    //メニューに戻る
+    function r_menu(){
+        window.location.href = '../index.html';
+    }
     // canvas上に書いた絵を全部消す
     function clear() {
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -140,6 +143,9 @@ window.addEventListener('load', () => {
 
     // マウス操作やボタンクリック時のイベント処理を定義する
     function initEventHandler() {
+        //メニューに戻る
+        const returnButton = document.querySelector('#return');
+        returnButton.addEventListener('click', r_menu);
         //消す
         const clearButton = document.querySelector('#clear');
         clearButton.addEventListener('click', clear);
