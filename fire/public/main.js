@@ -103,6 +103,17 @@ phina.define('GameScene', {
         
         this.group = group;
 
+    //returnボタン作成
+    //ボタンの枠のサイズを変更する方法がわかりません
+        Button({
+            text: "return",
+            fontSize: 30,
+        }
+        ).addChildTo(this).setPosition(this.gridX.span(13.25), this.gridY.span(15)).onpush = function () {
+            self.exit('Title');
+        };
+
+
     //ウィンドウ消した時の処理
         window.onbeforeunload = function () {
         //ユーザを消して手札を解放する
@@ -230,12 +241,21 @@ phina.define('MakeScene', {
             });
         }
     //ボタン
+    //returnボタン作成
+        Button({
+            text: "return",
+            fontSize: 30,
+        }
+        ).addChildTo(this).setPosition(this.gridX.span(11), this.gridY.span(15)).onpush = function () {
+            self.exit('Title');
+        };
+
     //押されたらデータベースに部屋情報を書き込む
         Button({
             text: "make",
             fontSize: 30,
         }
-        ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(15)).onpush = function () {
+        ).addChildTo(self).setPosition(self.gridX.span(4.5), self.gridY.span(15)).onpush = function () {
         //部屋名    
             var myroom = firebase.database().ref("/room/").push({
                 name: "room"+rnd
