@@ -3,24 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">   
     <title>Make</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <style>
+        
+    </style>
 </head>
 <body>
     <h1>カードを作ろう！</h1>
+    <div id="button">
+        <button id="return">メニューに戻る</button>
+    </div>
+    <div id="canvas_wrapping">
     <canvas
         id="draw-area"
-        width="180px"
-        height="240px"
-        style="border: 1px solid #000000;"></canvas>
-    <div>
+        width="225px"
+        height="300px"
+        style="border: 1px solid #000000;
+               background-color:white;"></canvas>
+    </div>
+    <div id="button">
         <button id="clear">消す</button>
         <button id="make">作る</button>
         <button id="save">保存</button>
     </div>
+    <h2>「作る」で試しに作ってみよう！<br>できたら「保存」！</h2>
     <!-- 保存される画像-->
-    <div><img id="img"></div>
-  
+    <div id="made"><img id="img"></div>
+    
     <script src="./main.js"></script>
 
 </body>
