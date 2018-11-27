@@ -1,0 +1,113 @@
+*, *:before, *:after {
+    box-sizing: border-box; 
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    color: #444;
+    /*background-color: rgb(39, 86, 3); */
+    background-color: lightblue;
+    margin: 10;
+    padding: 10;
+}
+h1 {
+    color: black;
+    font-size: 30px;
+    text-align: center;
+}
+h2{
+    color: dimgray;
+    font-size: 15px;
+    text-align: center;
+    margin:10px auto;
+}
+
+/*キャンバス*/
+/**********/
+#draw-area{
+    width:230px;
+    margin:5px auto;
+    text-align: center;
+}
+#canvas_wrapping{
+    text-align: center;
+}
+/**********/
+
+/*ボタン関連*/
+/**********/
+#clear{
+    display: inline-block;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    background: #f7f7f7;
+    border-left: solid 6px #f00f5c;/*左線*/
+    color: #f00f5c;/*文字色*/
+    font-weight: bold;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.29);
+    width:75px;
+}
+#clear:active{
+    box-shadow: inset 0 0 2px rgba(128, 128, 128, 0.1);
+    transform: translateY(2px);
+}
+#make{
+    display: inline-block;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    background: #f7f7f7;
+    border-left: solid 6px #ff7c5c;/*左線*/
+    color: #ff7c5c;/*文字色*/
+    font-weight: bold;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.29);
+    width:75px;
+}
+#make:active{
+    box-shadow: inset 0 0 2px rgba(128, 128, 128, 0.1);
+    transform: translateY(2px);
+}
+#save{
+    display: inline-block;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    background: #f7f7f7;
+    border-left: solid 6px #0f7c5c;/*左線*/
+    color: #0f7c5c;/*文字色*/
+    font-weight: bold;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.29);
+    width:75px;
+}
+#save:active{
+    box-shadow: inset 0 0 2px rgba(128, 128, 128, 0.1);
+    transform: translateY(2px);
+}
+#return{
+    display: inline-block;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    background: #668ad8;/*ボタン色*/
+    color: #FFF;
+    border-bottom: solid 4px #627295;
+    border-radius: 3px;    
+}
+#return:active{
+    -ms-transform: translateY(4px);
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);/*下に動く*/
+    border-bottom: none;/*線を消す*/
+}
+#button{
+    text-align: center;
+}
+/**********/
+
+/*作った画像*/
+/**********/
+#made{
+    text-align: center;
+    transform: scale(0.5);
+    padding: 0em 0em;
+}

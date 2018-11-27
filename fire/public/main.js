@@ -113,6 +113,17 @@ phina.define('GameScene', {
         
         this.group = group;
 
+    //returnボタン作成
+    //ボタンの枠のサイズを変更する方法がわかりません
+        Button({
+            text: "return",
+            fontSize: 30,
+        }
+        ).addChildTo(this).setPosition(this.gridX.span(13.25), this.gridY.span(15)).onpush = function () {
+            self.exit('Title');
+        };
+
+
     //ウィンドウ消した時の処理
         window.onbeforeunload = function () {
         //ユーザを消して手札を解放する
@@ -164,6 +175,43 @@ phina.define('TitleScene', {
                 self.exit('Make');
             }
         };
+      
+        var card = Button({
+            text: "card",
+            fontSize: 60,
+        });
+        card.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(14)).onpush = function () {
+            window.location.href = 'card_make/index.html';
+        };
+        
+        
+    //タイトル画面で全ての画像をダウンロードします。解決策求む
+        firebase.database().ref("/image").once('value').then(async function (snapshot) {
+            const snapval = snapshot.val();
+            const ret =  Promise.all(                      
+                Object.keys(snapval).map(async (x) => {
+                    const path    = snapval[x].name;
+                    const storage = firebase.storage().ref(path);
+                    const url     = await storage.getDownloadURL();   
+                    return [path, url];
+            }));   
+            return ret;
+        }).then((xs) => {                                                
+            xs.forEach((x) => {
+                const path = x[0];
+                const url  = x[1];
+                ASSETS["image"][path] = url;
+                console.log(url);
+            });
+            console.log(xs); 
+            var loader = phina.asset.AssetLoader();
+            loader.load(ASSETS);
+            loader.on('load', function() {
+                console.log("load");
+                bool = true;
+                make.fill = "MediumTurquoise"
+            });                     
+        });
     }
 });
 
@@ -202,12 +250,21 @@ phina.define('MakeScene', {
         });
 
     //ボタン
+    //returnボタン作成
+        Button({
+            text: "return",
+            fontSize: 30,
+        }
+        ).addChildTo(this).setPosition(this.gridX.span(11), this.gridY.span(15)).onpush = function () {
+            self.exit('Title');
+        };
+
     //押されたらデータベースに部屋情報を書き込む
         Button({
             text: "make",
             fontSize: 30,
         }
-        ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(15)).onpush = function () {
+        ).addChildTo(self).setPosition(self.gridX.span(4.5), self.gridY.span(15)).onpush = function () {
         //部屋名    
             var myroom = firebase.database().ref("/room/").push({
                 name: "room"+rnd
