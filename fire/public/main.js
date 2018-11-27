@@ -55,7 +55,17 @@ phina.define('GameScene', {
                 if (id1 == 0 || id1 == ID) {
                     if(self.serect == this){                 
                         shape.x += e.pointer.dx;
+                        if (shape.left < 0) {
+                            shape.x -= shape.left;
+                        } else if (self.width < shape.right) {
+                            shape.x += self.width - shape.right;
+                        }
                         shape.y += e.pointer.dy;
+                        if (shape.top < 0) {
+                            shape.y -= shape.top;
+                        } else if (self.height < shape.bottom) {
+                            shape.y += self.height - shape.bottom;
+                        }
                         if (Collision.testRectRect(shape, hand)) {
                             pos.update({ belong: ID, x: shape.x, y: shape.y });
                         } else {
