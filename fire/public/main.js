@@ -18,7 +18,7 @@ phina.define('GameScene', {
         var ID = Math.round(Math.random() * 1000000);
         var user = firebase.database().ref("/users").push({ id: ID });
     //説明文の表示
-        var label = phina.display.Label({ text: "カードをドラッグで動かせます。¥nピンクのところは手札" });
+        var label = phina.display.Label({ text: "カードをドラッグで動かせます。ピンクのところは手札" });
         label.addChildTo(this);
         label.setPosition(320, 160);
     // 手札領域の追加
@@ -53,9 +53,19 @@ phina.define('GameScene', {
         //データベースの位置を書き換える
             shape.on('pointmove', function (e) {
                 if (id1 == 0 || id1 == ID) {
-                    if(self.serect == this){                 
+                    if(self.serect == this){
                         shape.x += e.pointer.dx;
+                        if (shape.left < 0) {
+                            shape.x -= shape.left;
+                        } else if (self.width < shape.right) {
+                            shape.x += self.width - shape.right;
+                        }
                         shape.y += e.pointer.dy;
+                        if (shape.top < 0) {
+                            shape.y -= shape.top;
+                        } else if (self.height < shape.bottom) {
+                            shape.y += self.height - shape.bottom;
+                        }
                         if (Collision.testRectRect(shape, hand)) {
                             pos.update({ belong: ID, x: shape.x, y: shape.y });
                         } else {
@@ -150,37 +160,10 @@ phina.define('TitleScene', {
         });
         make.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(12)).onpush = function () {
             console.log(bool);
-            if (bool) {
+            if (true) {
                 self.exit('Make');
             }
         };
-    //タイトル画面で全ての画像をダウンロードします。解決策求む
-        firebase.database().ref("/image").once('value').then(async function (snapshot) {
-            const snapval = snapshot.val();
-            const ret =  Promise.all(                      
-                Object.keys(snapval).map(async (x) => {
-                    const path    = snapval[x].name;
-                    const storage = firebase.storage().ref(path);
-                    const url     = await storage.getDownloadURL();   
-                    return [path, url];
-            }));   
-            return ret;
-        }).then((xs) => {                                                
-            xs.forEach((x) => {
-                const path = x[0];
-                const url  = x[1];
-                ASSETS["image"][path] = url;
-                console.log(url);
-            });
-            console.log(xs); 
-            var loader = phina.asset.AssetLoader();
-            loader.load(ASSETS);
-            loader.on('load', function() {
-                console.log("load");
-                bool = true;
-                make.fill = "MediumTurquoise"
-            });                     
-        });
     }
 });
 
@@ -193,32 +176,31 @@ phina.define('MakeScene', {
         self = this;
         var rnd = Math.round(Math.random() * 100000);
 
-    //選ぶためにカードを全部表示していく。
-    //選ばれたカードは自分の画像を表示用の配列に入れます。
+    //全画像のダウンロード
         var cards = [];
         var x = 1.5;
         var y = 1.5;
-        for ( a in ASSETS.image) {
-            if (a == "title" || a == "bk0") {
-                continue;
-
-            }
-            var card = phina.display.Sprite(a);
-            card.addChildTo(self).setInteractive(true).setPosition(self.gridX.span(x), self.gridY.span(y));
-            x += 1.5;
-            if (x >= 16){
-                x = 1.5;
-                y += 1.5;
-            }
-            card.on('pointend', function (e) {
-                //self.setRectInteraction();
-                console.log(this._image.src);
-                const result = Object.keys(ASSETS.image).filter( (key) => {
-                    return ASSETS.image[key] === this._image.src;
+        firebase.database().ref("/image").on("child_added", function (snapshot) {
+            var loader = phina.asset.AssetLoader();
+            var path = snapshot.val().name;
+            firebase.storage().ref(path).getDownloadURL().then(function(url) {
+                ASSETS["image"][path] = url;
+                loader.load(ASSETS);
+            })
+            loader.on('load', function() {
+                var card = phina.display.Sprite(path);
+                card.addChildTo(self).setInteractive(true).setPosition(self.gridX.span(x), self.gridY.span(y));
+                x += 1.5;
+                if (x >= 16){
+                    x = 1.5;
+                    y += 1.5;
+                }
+                card.on('pointend', function (e) {
+                    cards.push(path);
                 });
-                cards.push(result);
             });
-        }
+        });
+
     //ボタン
     //押されたらデータベースに部屋情報を書き込む
         Button({
