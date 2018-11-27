@@ -293,17 +293,20 @@ phina.define('RoomScene', {
         this.superInit();
         this.backgroundColor = 'lightblue';
         const self = this;
+        var group = DisplayElement().addChildTo(this); //ボタンをグループ化
         var i = 2;
         var sel = false;    //１度しかボタンを押させないため。
+        var nonDrag = true;
     //部屋ごとにボタンを作る。
         firebase.database().ref("/room").on("child_added", function (snapshot) {
             var name = snapshot.val().name;
-            Button({
+            var roombtn = Button({
                 text: name,
                 fontSize: 30,
-            }
-            ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(i)).onpush = function () {
-                if (!sel) {
+            });
+            roombtn.addChildTo(group).setPosition(self.gridX.center(), self.gridY.span(i));
+            roombtn.on('pointend', function (e) {
+                if (!sel && nonDrag) {
                     this.fill = "pink";
                     sel = true;
                     var param = { room: snapshot };
@@ -333,8 +336,15 @@ phina.define('RoomScene', {
                             self.exit('Game', param);
                         });                     
                     });
-                }
-            };
+                };
+                nonDrag = true;
+            });
+        //roomのボタンをドラッグ可能にする
+            roombtn.on('pointmove', function (e) {
+                console.log("a");
+                nonDrag = false;
+                group.y += e.pointer.dy;
+            });
             i = i + 2;
         });
 
