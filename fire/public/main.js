@@ -18,7 +18,7 @@ phina.define('GameScene', {
         var ID = Math.round(Math.random() * 1000000);
         var user = firebase.database().ref("/users").push({ id: ID });
     //説明文の表示
-        var label = phina.display.Label({ text: "カードをドラッグで動かせます。¥nピンクのところは手札" });
+        var label = phina.display.Label({ text: "カードをドラッグで動かせます。\nピンクのところは手札" });
         label.addChildTo(this);
         label.setPosition(320, 160);
     // 手札領域の追加
@@ -55,7 +55,17 @@ phina.define('GameScene', {
                 if (id1 == 0 || id1 == ID) {
                     if(self.serect == this){                 
                         shape.x += e.pointer.dx;
+                        if (shape.left < 0) {
+                            shape.x -= shape.left;
+                        } else if (self.width < shape.right) {
+                            shape.x += self.width - shape.right;
+                        }
                         shape.y += e.pointer.dy;
+                        if (shape.top < 0) {
+                            shape.y -= shape.top;
+                        } else if (self.height < shape.bottom) {
+                            shape.y += self.height - shape.bottom;
+                        }
                         if (Collision.testRectRect(shape, hand)) {
                             pos.update({ belong: ID, x: shape.x, y: shape.y });
                         } else {
@@ -110,6 +120,13 @@ phina.define('GameScene', {
             fontSize: 30,
         }
         ).addChildTo(this).setPosition(this.gridX.span(13.25), this.gridY.span(15)).onpush = function () {
+            for (let p of poss) {
+                p.once('value').then(function (snapshot) {
+                    if (snapshot.val().belong == ID) {
+                        p.update({ belong: 0 });
+                    }
+                });
+            }
             self.exit('Title');
         };
 
@@ -165,15 +182,15 @@ phina.define('TitleScene', {
                 self.exit('Make');
             }
         };
-        /*
-        var card = Button({
-            text: "card",
-            fontSize: 60,
-        });
-        card.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(14)).onpush = function () {
-            window.location.href = 'card_make/index.html';
-        };*/
         
+        // var card = Button({
+        //     text: "card",
+        //     fontSize: 60,
+        // });
+        // card.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(14)).onpush = function () {
+        //     window.location.href = 'card_make/index.html';
+        // };
+
         
     //タイトル画面で全ての画像をダウンロードします。解決策求む
         firebase.database().ref("/image").once('value').then(async function (snapshot) {
@@ -220,7 +237,7 @@ phina.define('MakeScene', {
         var x = 1.5;
         var y = 1.5;
         for ( a in ASSETS.image) {
-            if (a == "title" || a == "bk0") {
+            if (a == "title" || a == "bk0.png") {
                 continue;
 
             }
@@ -284,17 +301,20 @@ phina.define('RoomScene', {
         this.superInit();
         this.backgroundColor = 'lightblue';
         const self = this;
+        var group = DisplayElement().addChildTo(this); //ボタンをグループ化
         var i = 2;
         var sel = false;    //１度しかボタンを押させないため。
+        var nonDrag = true;
     //部屋ごとにボタンを作る。
         firebase.database().ref("/room").on("child_added", function (snapshot) {
             var name = snapshot.val().name;
-            Button({
+            var roombtn = Button({
                 text: name,
                 fontSize: 30,
-            }
-            ).addChildTo(self).setPosition(self.gridX.center(), self.gridY.span(i)).onpush = function () {
-                if (!sel) {
+            });
+            roombtn.addChildTo(group).setPosition(self.gridX.center(), self.gridY.span(i));
+            roombtn.on('pointend', function (e) {
+                if (!sel && nonDrag) {
                     this.fill = "pink";
                     sel = true;
                     var param = { room: snapshot };
@@ -324,8 +344,15 @@ phina.define('RoomScene', {
                             self.exit('Game', param);
                         });                     
                     });
-                }
-            };
+                };
+                nonDrag = true;
+            });
+        //roomのボタンをドラッグ可能にする
+            roombtn.on('pointmove', function (e) {
+                console.log("a");
+                nonDrag = false;
+                group.y += e.pointer.dy;
+            });
             i = i + 2;
         });
 
