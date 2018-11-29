@@ -120,6 +120,13 @@ phina.define('GameScene', {
             fontSize: 30,
         }
         ).addChildTo(this).setPosition(this.gridX.span(13.25), this.gridY.span(15)).onpush = function () {
+            for (let p of poss) {
+                p.once('value').then(function (snapshot) {
+                    if (snapshot.val().belong == ID) {
+                        p.update({ belong: 0 });
+                    }
+                });
+            }
             self.exit('Title');
         };
 
@@ -230,7 +237,7 @@ phina.define('MakeScene', {
         var x = 1.5;
         var y = 1.5;
         for ( a in ASSETS.image) {
-            if (a == "title" || a == "bk0") {
+            if (a == "title" || a == "bk0.png") {
                 continue;
 
             }
