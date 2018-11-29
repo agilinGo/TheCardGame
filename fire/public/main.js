@@ -46,6 +46,13 @@ phina.define('GameScene', {
             poss.push(pos);
             var img = snapshot.val().img;
             var shape = phina.display.Sprite(img);
+            for ( a in ASSETS.image) {
+                if (a == "bk0.png") {
+                    var back_image = a;
+                    break;
+                }                
+            }
+            var back = phina.display.Sprite(back_image);
             var id1;
             shape.addChildTo(group);
             shape.setInteractive(true);
@@ -86,11 +93,17 @@ phina.define('GameScene', {
             shape.on('pointend', function (e) {
                 //self.setRectInteraction();
                 self.serect = null;
+                this.remove();               
+                back.addChildTo(group);
             });
         //データベース書き換えた時の処理
         //位置をデータベースから反映する
             pos.on("value", function (snapshot) {
                 id1 = snapshot.val().belong;
+                if(snapshot.val().x == shape.x || snapshot.val().y == shape.y)
+                {
+                    shape.addChildTo(group)
+                }
                 shape.setPosition(snapshot.val().x, snapshot.val().y);
                 if (id1 == 0 || id1 == ID) {
                     shape.show();
@@ -109,6 +122,58 @@ phina.define('GameScene', {
                     shape.setInteractive(false);
                 }
             }
+            //ドラック時処理
+        //データベースの位置を書き換える
+        back.on('pointmove', function (e) {
+            if (id1 == 0 || id1 == ID) {
+                if(self.serect == this){                 
+                    back.x += e.pointer.dx;
+                    back.y += e.pointer.dy;
+                    if (Collision.testRectRect(shape, hand)) {
+                        pos.update({ belong: ID, x: back.x, y: back.y });
+                    } else {
+                        pos.update({ belong: 0, x: back.x, y: back.y });
+                    }
+                }
+            }
+        });
+    //わからないから誰か書き換えて
+    //クリックしたカードを一番上に持ってくて、serectに代入
+        back.on('pointstart', function (e) {
+            //self.setRectInteraction();
+            self.serect = this;
+            this.remove();               
+            back.addChildTo(group);
+        });
+    //離したらserectを空に
+        back.on('pointend', function (e) {
+            //self.setRectInteraction();
+            self.serect = null;
+            this.remove();               
+            shape.addChildTo(group);
+        });
+    //データベース書き換えた時の処理
+    //位置をデータベースから反映する
+        pos.on("value", function (snapshot) {
+            id1 = snapshot.val().belong;
+            back.setPosition(snapshot.val().x, snapshot.val().y);
+            if (id1 == 0 || id1 == ID) {
+                back.show();
+                back.setInteractive(true);
+            } else {
+                back.hide();
+                back.setInteractive(false);
+            }
+        });
+    //わからないから誰か書き換えて
+    //選択しているカードをタッチ可能にする
+        back.update = function() {
+            if (self.serect == null || self.serect == this) {             
+                back.setInteractive(true);
+            } else {
+                back.setInteractive(false);
+            }
+        }
         });
         
         this.group = group;
