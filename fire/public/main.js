@@ -56,6 +56,11 @@ phina.define('GameScene', {
             var id1;
             shape.addChildTo(group);
             shape.setInteractive(true);
+            var start_X;
+            var start_Y;
+            var dir_X;
+            var dir_Y;
+            var show_back = false;
         //ドラック時処理
         //データベースの位置を書き換える
             shape.on('pointmove', function (e) {
@@ -88,23 +93,42 @@ phina.define('GameScene', {
                 self.serect = this;
                 this.remove();
                 shape.addChildTo(group);
+                start_X = e.pointer.x;
+                start_Y = e.pointer.y;
             });
         //わからないから誰か書き換えて
             shape.on('pointend', function (e) {
                 //self.setRectInteraction();
                 self.serect = null;
-                this.remove();               
-                back.addChildTo(group);
+                dir_X = e.pointer.x - start_X;
+                dir_Y = e.pointer.y - start_Y;
+                if((dir_X > -0.01) && (dir_X < 0.01))
+                {
+                  if((dir_X > -0.01) && (dir_X < 0.01))
+                  {            
+                    back.addChildTo(group);
+                    this.remove();
+                    show_back = true;
+                    pos.update({ reverse: 1});
+                  }
+                }
             });
         //データベース書き換えた時の処理
         //位置をデータベースから反映する
             pos.on("value", function (snapshot) {
-                id1 = snapshot.val().belong;
-                if(snapshot.val().x == shape.x || snapshot.val().y == shape.y)
-                {
-                    shape.addChildTo(group)
-                }
+                if(!show_back){
+                    if(snapshot.val().x == shape.x || snapshot.val().y == shape.y)
+                    {
+                        shape.addChildTo(group)
+                    }
+                    if(snapshot.val().reverse == 1)
+                    {
+                        back.addChildTo(group);
+                        shape.remove();
+                    }
+                }                
                 shape.setPosition(snapshot.val().x, snapshot.val().y);
+                id1 = snapshot.val().belong;                
                 if (id1 == 0 || id1 == ID) {
                     shape.show();
                     shape.setInteractive(true);
@@ -144,18 +168,41 @@ phina.define('GameScene', {
             self.serect = this;
             this.remove();               
             back.addChildTo(group);
+            start_X = e.pointer.x;
+            start_Y = e.pointer.y;
         });
     //離したらserectを空に
         back.on('pointend', function (e) {
             //self.setRectInteraction();
             self.serect = null;
-            this.remove();               
-            shape.addChildTo(group);
+            dir_X = e.pointer.x - start_X;
+            dir_Y = e.pointer.y - start_Y;
+            if((dir_X > -0.01) && (dir_X < 0.01))
+            {
+              if((dir_X > -0.01) && (dir_X < 0.01))
+              {            
+                this.remove();
+                shape.addChildTo(group);
+                show_back = false;
+                pos.update({ reverse: 0});                   
+              }
+            }    
         });
     //データベース書き換えた時の処理
     //位置をデータベースから反映する
         pos.on("value", function (snapshot) {
             id1 = snapshot.val().belong;
+            if(show_back){
+                if(snapshot.val().x == shape.x || snapshot.val().y == shape.y)
+                {
+                    back.addChildTo(group)
+                }
+                if(snapshot.val().reverse == 0)
+                {
+                    shape.addChildTo(group);
+                    back.remove();
+                }
+            }
             back.setPosition(snapshot.val().x, snapshot.val().y);
             if (id1 == 0 || id1 == ID) {
                 back.show();
@@ -342,7 +389,8 @@ phina.define('MakeScene', {
                     id: i,
                     img: cards[i][0],
                     x: 100,
-                    y: 100
+                    y: 100,
+                    reverse: 0
                 });
             }
             var param = { room: myroom };
