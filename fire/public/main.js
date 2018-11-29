@@ -18,7 +18,7 @@ phina.define('GameScene', {
         var ID = Math.round(Math.random() * 1000000);
         var user = firebase.database().ref("/users").push({ id: ID });
     //説明文の表示
-        var label = phina.display.Label({ text: "カードをドラッグで動かせます。¥nピンクのところは手札" });
+        var label = phina.display.Label({ text: "カードをドラッグで動かせます。\nピンクのところは手札" });
         label.addChildTo(this);
         label.setPosition(320, 160);
     // 手札領域の追加
@@ -183,13 +183,13 @@ phina.define('TitleScene', {
             }
         };
         
-        var card = Button({
-            text: "card",
-            fontSize: 60,
-        });
-        card.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(14)).onpush = function () {
-            window.location.href = 'card_make/index.html';
-        };
+        // var card = Button({
+        //     text: "card",
+        //     fontSize: 60,
+        // });
+        // card.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(14)).onpush = function () {
+        //     window.location.href = 'card_make/index.html';
+        // };
         
         
     //タイトル画面で全ての画像をダウンロードします。解決策求む
