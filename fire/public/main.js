@@ -190,7 +190,7 @@ phina.define('TitleScene', {
         // card.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(14)).onpush = function () {
         //     window.location.href = 'card_make/index.html';
         // };
-        
+
         
     //タイトル画面で全ての画像をダウンロードします。解決策求む
         firebase.database().ref("/image").once('value').then(async function (snapshot) {
@@ -257,6 +257,7 @@ phina.define('MakeScene', {
                 cards.push(result);
             });
         }
+        
     //ボタン
     //returnボタン作成
         Button({
