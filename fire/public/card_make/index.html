@@ -6,9 +6,35 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">   
     <title>Make</title>
     <link rel="stylesheet" type="text/css" href="style.css">
-    <style>
-        
-    </style>
+    
+    <!-- firebase を読み込む -->
+    <!-- Firebase App is always required and must be first -->
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-app.js"></script>
+    <!-- Add additional services that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-messaging.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-functions.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.3/firebase.js"></script>
+    <script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyDSe48M9BONGH-WbMJtwdDf2zbkW_aFeaM",
+        authDomain: "thecardgame-30148.firebaseapp.com",
+        databaseURL: "https://thecardgame-30148.firebaseio.com",
+        projectId: "thecardgame-30148",
+        storageBucket: "thecardgame-30148.appspot.com",
+        messagingSenderId: "587236212051"
+    };
+    //firebase.initializeApp(config);
+    // Initialize another app with a different config
+    var otherApp = firebase.initializeApp(config, "other");
+    // Use the otherApp variable to retrieve the other app's services
+    var otherStorage = otherApp.storage();
+    var otherDatabase = otherApp.database();
+    </script>
+    
 </head>
 <body>
     <h1>カードを作ろう！</h1>
@@ -18,7 +44,7 @@
     <div id="canvas_wrapping">
     <canvas
         id="draw-area"
-        width="225px"
+        width="236px"
         height="300px"
         style="border: 1px solid #000000;
                background-color:white;"></canvas>

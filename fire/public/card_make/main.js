@@ -1,10 +1,15 @@
 // ページの読み込みが完了したらコールバック関数が呼ばれる
 // ※コールバック: 第2引数の無名関数(=関数名が省略された関数)
 window.addEventListener('load', () => {
+
     const canvas = document.querySelector('#draw-area');
     // contextを使ってcanvasに絵を書いていく
     const context = canvas.getContext('2d');
-    
+    context.fillStyle = 'rgb(255,255,255)';
+    //背景
+    context.fillRect(0,0,236,300);
+    //枠線
+    context.strokeRect(0,0,236,300);
     // 直前のマウスのcanvas上のx座標とy座標を記録する
     const lastPosition = { x: null, y: null };
 
@@ -56,6 +61,8 @@ window.addEventListener('load', () => {
         lastPosition.x = x;
         lastPosition.y = y;
     }
+    
+    
     //スマホ用
 	var finger=new Array;
 	for(var i=0;i<10;i++){
@@ -134,12 +141,25 @@ window.addEventListener('load', () => {
     function save(){
         //後で名前をタイプして指定できるようにしたい
         var fileName = window.prompt("カードに名前をつけよう！","Card");
-        var base64 = canvas.toDataURL();
+        //サイズ縮小
+        var base64 = CanvasResize(canvas,66,84);
         //base64データをblobに変換
         var blob = Base64toBlob(base64);
         //画像の保存
-        saveBlob(blob, fileName+'.png');
-
+        //saveBlob(blob, fileName+'.png');
+        //firebaseへのアップロード
+        upload2fire(blob, fileName);
+    }
+    //canvasサイズ変換
+    CanvasResize = function(canvas,width,height){
+        var img = new Image();
+        img.onload = function(){
+            canvas.width = width;
+            canvas.height = height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img,0,0,width,height);
+        }
+        return canvas.toDataURL();
     }
     //Base64データをBlobに変換
     function Base64toBlob(base64){   
@@ -170,6 +190,17 @@ window.addEventListener('load', () => {
         // イベントの発火
         a.dispatchEvent(event);
     }
+
+    //firebaseへのアップロード
+    function upload2fire(blob,fileName){
+        // rootパスを作成
+        var storageRef = otherStorage.ref();
+        var databaseRef = otherDatabase.ref("/image");
+        var cardRef = storageRef.child(fileName+'.png');
+        cardRef.put(blob);
+        databaseRef.push({name: fileName+'.png'});
+    }
+    
   // マウスのドラッグを開始したらisDragのフラグをtrueにしてdraw関数内で
   // お絵かき処理が途中で止まらないようにする
     function dragStart(event) {
