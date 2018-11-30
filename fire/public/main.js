@@ -54,13 +54,21 @@ phina.define('GameScene', {
             }
             var back = phina.display.Sprite(back_image);
             var id1;
-            shape.addChildTo(group);
-            shape.setInteractive(true);
+            if(snapshot.val().reverse)
+            {
+                shape.addChildTo(group);
+                shape.setInteractive(true);
+                var show_back = false;
+            } else {
+                back.addChildTo(group);
+                back.setInteractive(true);
+                var show_back = true;
+            }            
             var start_X;
             var start_Y;
             var dir_X;
             var dir_Y;
-            var show_back = false;
+           
         //ドラック時処理
         //データベースの位置を書き換える
             shape.on('pointmove', function (e) {
