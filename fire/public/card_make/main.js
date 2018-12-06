@@ -9,6 +9,7 @@ window.addEventListener('load', () => {
     //背景
     context.fillRect(0,0,236,300);
     //枠線
+    context.lineWidth = 5; 
     context.strokeRect(0,0,236,300);
     // 直前のマウスのcanvas上のx座標とy座標を記録する
     const lastPosition = { x: null, y: null };
@@ -130,36 +131,43 @@ window.addEventListener('load', () => {
     // canvas上に書いた絵を全部消す
     function clear() {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        //消されても白には塗る
+        context.fillStyle = 'rgb(255,255,255)';
+        //背景
+        context.fillRect(0,0,236,300);
+        //枠線
+        context.strokeRect(0,0,236,300);
     }
     // canvas上に書いた絵を保存する
     function make(){
-        //canvasを画像へ
-        var base64 = canvas.toDataURL();
-        document.getElementById("img").src = base64;
+        ImgB64Resize(canvas.toDataURL("image/png"),66,84,
+            function(img_b64) {
+                document.getElementById("img").src = img_b64;
+            }     
+        );
     }
-    //画像のダウンロード
-    function save(){
-        //後で名前をタイプして指定できるようにしたい
+    
+    // Base64のリサイズ
+    //   img_base64_src: string "data:image/png;base64,xxxxxxxx"
+    function ImgB64Resize(imgB64_src, width, height,callback) {
         var fileName = window.prompt("カードに名前をつけよう！","Card");
-        //サイズ縮小
-        var base64 = CanvasResize(canvas,66,84);
-        //base64データをblobに変換
-        var blob = Base64toBlob(base64);
-        //画像の保存
-        //saveBlob(blob, fileName+'.png');
-        //firebaseへのアップロード
-        upload2fire(blob, fileName);
-    }
-    //canvasサイズ変換
-    CanvasResize = function(canvas,width,height){
+        // 新しい画像
         var img = new Image();
-        img.onload = function(){
-            canvas.width = width;
-            canvas.height = height;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img,0,0,width,height);
-        }
-        return canvas.toDataURL();
+        img.src = imgB64_src;
+        img.onload = function() {
+            // 新しいcanvas
+            var cv = document.createElement('canvas');
+            cv.width = width;
+            cv.height = height;
+            var ctx = cv.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            var imgB64_dst = cv.toDataURL("image/png");
+            callback(imgB64_dst);
+            //blobに変換
+            var blob = Base64toBlob(imgB64_dst);
+            //firebaseにアップロード
+            upload2fire(blob, fileName);  
+        };            
     }
     //Base64データをBlobに変換
     function Base64toBlob(base64){   
@@ -190,7 +198,6 @@ window.addEventListener('load', () => {
         // イベントの発火
         a.dispatchEvent(event);
     }
-
     //firebaseへのアップロード
     function upload2fire(blob,fileName){
         // rootパスを作成
@@ -233,10 +240,7 @@ window.addEventListener('load', () => {
         //作る
         const makeButton = document.querySelector('#make');
         makeButton.addEventListener('click', make);
-        //保存
-        const saveButton = document.querySelector('#save');
-        saveButton.addEventListener('click', save);
-
+        
         canvas.addEventListener('mousedown', dragStart);
         canvas.addEventListener('mouseup', dragEnd);
         canvas.addEventListener('mouseout', dragEnd);

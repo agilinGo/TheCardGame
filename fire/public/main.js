@@ -165,14 +165,14 @@ phina.define('TitleScene', {
                 self.exit('Make');
             }
         };
-        /*
+    
         var card = Button({
             text: "card",
             fontSize: 60,
         });
         card.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(14)).onpush = function () {
             window.location.href = 'card_make/index.html';
-        };*/
+        };
         
         
     //タイトル画面で全ての画像をダウンロードします。解決策求む
