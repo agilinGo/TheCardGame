@@ -160,8 +160,18 @@ phina.define('GameScene', {
             if (id1 == 0 || id1 == ID) {
                 if(self.serect == this){                 
                     back.x += e.pointer.dx;
-                    back.y += e.pointer.dy;
-                    if (Collision.testRectRect(shape, hand)) {
+                        if (back.left < 0) {
+                            back.x -= back.left;
+                        } else if (self.width < back.right) {
+                            back.x += self.width - back.right;
+                        }
+                        back.y += e.pointer.dy;
+                        if (shape.top < 0) {
+                            back.y -= back.top;
+                        } else if (self.height < back.bottom) {
+                            back.y += self.height - back.bottom;
+                        }
+                    if (Collision.testRectRect(back, hand)) {
                         pos.update({ belong: ID, x: back.x, y: back.y });
                     } else {
                         pos.update({ belong: 0, x: back.x, y: back.y });
@@ -201,7 +211,7 @@ phina.define('GameScene', {
         pos.on("value", function (snapshot) {
             id1 = snapshot.val().belong;
             if(show_back){
-                if(snapshot.val().x == shape.x || snapshot.val().y == shape.y)
+                if(snapshot.val().x == back.x || snapshot.val().y == back.y)
                 {
                     back.addChildTo(group)
                 }
