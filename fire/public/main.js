@@ -246,10 +246,12 @@ phina.define('GameScene', {
     //returnボタン作成
     //ボタンの枠のサイズを変更する方法がわかりません
         Button({
+            width: 50,
+            height: 30,
             text: "return",
-            fontSize: 30,
+            fontSize: 14,
         }
-        ).addChildTo(this).setPosition(this.gridX.span(13.25), this.gridY.span(15)).onpush = function () {
+        ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(15.65)).onpush = function () {
             for (let p of poss) {
                 p.once('value').then(function (snapshot) {
                     if (snapshot.val().belong == ID) {
