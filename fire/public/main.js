@@ -243,6 +243,20 @@ phina.define('GameScene', {
         
         this.group = group;
 
+    //frontボタン作成
+    //ボタンの枠のサイズを変更する方法がわかりません
+    Button({
+        width: 50,
+        height: 30,
+        text: "front",
+        fontSize: 14,
+    }
+    ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(13.05)).onpush = function () {
+        for (let p of poss) {
+            p.update({ reverse: 0 }); 
+        }
+    };    
+
     //reverseボタン作成
     //ボタンの枠のサイズを変更する方法がわかりません
     Button({
