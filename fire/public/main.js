@@ -380,7 +380,6 @@ phina.define('TitleScene', {
                 self.exit('Make');
             }
         };
-
     
         var card = Button({
             text: "card",
@@ -486,7 +485,7 @@ phina.define('MakeScene', {
             text: "make",
             fontSize: 30,
         }
-        ).addChildTo(self).setPosition(self.gridX.span(5), self.gridY.span(15)).onpush = function () {
+        ).addChildTo(self).setPosition(self.gridX.span(11), self.gridY.span(15)).onpush = function () {
         //部屋名
             var name = window.prompt("ルーム名","");
 
