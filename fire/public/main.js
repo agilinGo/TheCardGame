@@ -252,7 +252,6 @@ phina.define('GameScene', {
         this.group = group;
 
     //frontボタン作成
-    //ボタンの枠のサイズを変更する方法がわかりません
     Button({
         width: 50,
         height: 30,
@@ -266,7 +265,6 @@ phina.define('GameScene', {
     };    
 
     //reverseボタン作成
-    //ボタンの枠のサイズを変更する方法がわかりません
     Button({
         width: 50,
         height: 30,
@@ -280,7 +278,6 @@ phina.define('GameScene', {
     };    
 
     //shuffleボタン作成
-    //ボタンの枠のサイズを変更する方法がわかりません
     Button({
         width: 50,
         height: 30,
@@ -288,6 +285,9 @@ phina.define('GameScene', {
         fontSize: 14,
     }
     ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(14.35)).onpush = function () {
+        for (let p of poss) {
+            p.update({ x: 100, y: 100 });     
+        }
         for (var i = poss.length-1; i>0; i--) {
             var r = Math.floor(Math.random() * (i + 1));
             var tmp = poss[i];
@@ -297,7 +297,6 @@ phina.define('GameScene', {
     };    
 
     //resetボタン作成
-    //ボタンの枠のサイズを変更する方法がわかりません
     Button({
         width: 50,
         height: 30,
@@ -310,12 +309,11 @@ phina.define('GameScene', {
         }
     };    
 
-    //returnボタン作成
-    //ボタンの枠のサイズを変更する方法がわかりません
+    //backボタン作成
         Button({
             width: 50,
             height: 30,
-            text: "return",
+            text: "back",
             fontSize: 14,
         }
         ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(15.65)).onpush = function () {
@@ -474,12 +472,12 @@ phina.define('MakeScene', {
         }
         
     //ボタン
-    //returnボタン作成
+    //backボタン作成
         Button({
-            text: "return",
+            text: "back",
             fontSize: 30,
         }
-        ).addChildTo(this).setPosition(this.gridX.span(11), this.gridY.span(15)).onpush = function () {
+        ).addChildTo(this).setPosition(this.gridX.span(4.5), this.gridY.span(15)).onpush = function () {
             self.exit('Title');
         };
 
@@ -491,6 +489,7 @@ phina.define('MakeScene', {
         ).addChildTo(self).setPosition(self.gridX.span(5), self.gridY.span(15)).onpush = function () {
         //部屋名
             var name = window.prompt("ルーム名","");
+
             var myroom = firebase.database().ref("/room/").push({
                 name: name
             });
@@ -519,17 +518,25 @@ phina.define('RoomScene', {
         this.backgroundColor = 'lightblue';
         const self = this;
         var group = DisplayElement().addChildTo(this); //ボタンをグループ化
-        var i = 2;
+        var i = 3;
+        var j = 3;
         var sel = false;    //１度しかボタンを押させないため。
         var nonDrag = true;
     //部屋ごとにボタンを作る。
         firebase.database().ref("/room").on("child_added", function (snapshot) {
             var name = snapshot.val().name;
             var roombtn = Button({
+                width: 150,
+                height: 60,
                 text: name,
-                fontSize: 30,
+                fontSize: 20,
             });
-            roombtn.addChildTo(group).setPosition(self.gridX.center(), self.gridY.span(i));
+            roombtn.addChildTo(group).setPosition(self.gridX.span(i), self.gridY.span(j));
+            i += 5
+            if(i >= 15) {
+                i = 3;
+                j += 1.5;
+            }
             roombtn.on('pointend', function (e) {
                 if (!sel && nonDrag) {
                     this.fill = "pink";
@@ -570,8 +577,20 @@ phina.define('RoomScene', {
                 nonDrag = false;
                 group.y += e.pointer.dy;
             });
-            i = i + 2;
         });
+
+        //ボタン
+        //backボタン作成
+        Button({
+            width: 150,
+            height: 60,
+            text: "back",
+            fontSize: 20,
+            fill:  "pink",
+        }
+        ).addChildTo(this).setPosition(this.gridX.span(3), this.gridY.span(1.5)).onpush = function () {
+            self.exit('Title');
+        };
 
     }
 });
