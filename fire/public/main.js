@@ -493,9 +493,10 @@ phina.define('MakeScene', {
             fontSize: 30,
         }
         ).addChildTo(self).setPosition(self.gridX.span(5), self.gridY.span(15)).onpush = function () {
-        //部屋名    
+        //部屋名
+            var name = window.prompt("ルーム名","");
             var myroom = firebase.database().ref("/room/").push({
-                name: "room"+rnd
+                name: name
             });
         //カード
             for (i in cards) {
