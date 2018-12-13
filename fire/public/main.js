@@ -251,6 +251,51 @@ phina.define('GameScene', {
         
         this.group = group;
 
+    //reverseボタン作成
+    //ボタンの枠のサイズを変更する方法がわかりません
+    Button({
+        width: 50,
+        height: 30,
+        text: "reverse",
+        fontSize: 14,
+    }
+    ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(13.70)).onpush = function () {
+        for (let p of poss) {
+            p.update({ reverse: 1 }); 
+        }
+    };    
+
+    //shuffleボタン作成
+    //ボタンの枠のサイズを変更する方法がわかりません
+    Button({
+        width: 50,
+        height: 30,
+        text: "shuffle",
+        fontSize: 14,
+    }
+    ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(14.35)).onpush = function () {
+        for (var i = poss.length-1; i>0; i--) {
+            var r = Math.floor(Math.random() * (i + 1));
+            var tmp = poss[i];
+            poss[i] = poss[r];
+            poss[r] = tmp;   
+        }
+    };    
+
+    //resetボタン作成
+    //ボタンの枠のサイズを変更する方法がわかりません
+    Button({
+        width: 50,
+        height: 30,
+        text: "reset",
+        fontSize: 14,
+    }
+    ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(15)).onpush = function () {
+        for (let p of poss) {
+            p.update({ x: 100, y: 100 });     
+        }
+    };    
+
     //returnボタン作成
     //ボタンの枠のサイズを変更する方法がわかりません
         Button({
