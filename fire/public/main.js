@@ -464,16 +464,12 @@ phina.define('MakeScene', {
                 });
                 //label.setPosition(this.gridX.center(), this.gridY.center());
                 label.addChildTo(this);
+                console.log(this._image.src);
+                const result = Object.keys(ASSETS.image).filter( (key)  => {
+                return ASSETS.image[key] === this._image.src;
+                });
+                cards.push(result);
                 
-                
-                for(var i = 0; i< num; i++){
-                    //self.setRectInteraction();
-                    console.log(this._image.src);
-                    const result = Object.keys(ASSETS.image).filter( (key)  => {
-                        return ASSETS.image[key] === this._image.src;
-                    });
-                    cards.push(result);
-                }
             });
         }
         
