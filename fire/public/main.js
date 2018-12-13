@@ -383,13 +383,28 @@ phina.define('MakeScene', {
                 x = 1.5;
                 y += 1.5;
             }
+            
             card.on('pointend', function (e) {
-                //self.setRectInteraction();
-                console.log(this._image.src);
-                const result = Object.keys(ASSETS.image).filter( (key) => {
-                    return ASSETS.image[key] === this._image.src;
+                var num = window.prompt("何枚使う？","0");
+                var label = phina.display.Label({ 
+                    text: num, 
+                    fontSize: 30, 
+                    fill: 'white',
+                    stroke: 'black',
+                    strokeWidth: 10,
                 });
-                cards.push(result);
+                //label.setPosition(this.gridX.center(), this.gridY.center());
+                label.addChildTo(this);
+                
+                
+                for(var i = 0; i< num; i++){
+                    //self.setRectInteraction();
+                    console.log(this._image.src);
+                    const result = Object.keys(ASSETS.image).filter( (key)  => {
+                        return ASSETS.image[key] === this._image.src;
+                    });
+                    cards.push(result);
+                }
             });
         }
         
@@ -408,7 +423,7 @@ phina.define('MakeScene', {
             text: "make",
             fontSize: 30,
         }
-        ).addChildTo(self).setPosition(self.gridX.span(4.5), self.gridY.span(15)).onpush = function () {
+        ).addChildTo(self).setPosition(self.gridX.span(5), self.gridY.span(15)).onpush = function () {
         //部屋名    
             var myroom = firebase.database().ref("/room/").push({
                 name: "room"+rnd
