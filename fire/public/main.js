@@ -13,7 +13,7 @@ phina.define('GameScene', {
         this.superInit(param);
         this.backgroundColor = 'lightblue';
         const self = this;
-        var Cards = [];
+        var hands = [];
     //IDの生成
         var ID = Math.round(Math.random() * 1000000);
         var user = firebase.database().ref("/users").push({ id: ID });
@@ -27,7 +27,6 @@ phina.define('GameScene', {
         hand_field.setPosition(320, 860);
         hand_field.setScale(10, 3);
         hand_field.fill = "pink";
-        var hand = phina.geom.Rect(0, hand_field.y - hand_field.height / 2, hand_field.width * 10, hand_field.height * 10);
         var i = 1;
         var serect = null;
     //部屋名の表示
@@ -75,18 +74,26 @@ phina.define('GameScene', {
                 if (id1 == 0 || id1 == ID) {
                     if(self.serect == this){                 
                         shape.x += e.pointer.dx;
+                        // 画面の制限 x
                         if (shape.left < 0) {
                             shape.x -= shape.left;
                         } else if (self.width < shape.right) {
                             shape.x += self.width - shape.right;
                         }
                         shape.y += e.pointer.dy;
+                        // 画面の制限 y
                         if (shape.top < 0) {
                             shape.y -= shape.top;
                         } else if (self.height < shape.bottom) {
                             shape.y += self.height - shape.bottom;
                         }
-                        if (Collision.testRectRect(shape, hand)) {
+                        // 手札の判定
+                        if (shape.bottom > 760) {
+                            hands.push(shape);
+                            console.log(hands);
+                            console.log(hands.length);
+                            console.log(hands.indexOf(shape));
+                            
                             pos.update({ belong: ID, x: shape.x, y: shape.y });
                         } else {
                             pos.update({ belong: 0, x: shape.x, y: shape.y });
@@ -94,7 +101,6 @@ phina.define('GameScene', {
                     }
                 }
             });
-        //わからないから誰か書き換えて
         //おそらく押された中の１つだけを動くようにして一番上に持ってきてる
             shape.on('pointstart', function (e) {
                 //self.setRectInteraction();
@@ -112,7 +118,7 @@ phina.define('GameScene', {
                 dir_Y = e.pointer.y - start_Y;
                 if((dir_X > -1) && (dir_X < 1))
                 {
-                  if((dir_X > -1) && (dir_X < 1))
+                  if((dir_Y > -1) && (dir_Y < 1))
                   {            
                     back.addChildTo(group);
                     this.remove();
@@ -121,8 +127,9 @@ phina.define('GameScene', {
                   }
                 }
             });
-        //データベース書き換えた時の処理
+        //データベースが書き換わった時の処理
         //位置をデータベースから反映する
+        //表の処理
             pos.on("value", function (snapshot) {
                 if(!show_back){
                     if(snapshot.val().x == shape.x - snapshot.val().x || snapshot.val().y == shape.y)
@@ -137,12 +144,12 @@ phina.define('GameScene', {
                 }                
                 shape.setPosition(snapshot.val().x, snapshot.val().y);
                 id1 = snapshot.val().belong;                
-                if (id1 == 0 || id1 == ID) {
-                    shape.show();
-                    shape.setInteractive(true);
+                if (id1 == 0) {
+                    shape.setPosition(snapshot.val().x, snapshot.val().y);
+                } else if (id1 == ID) {
+                    shape.setPosition(snapshot.val().x, snapshot.val().y);
                 } else {
-                    shape.hide();
-                    shape.setInteractive(false);
+                    shape.setPosition(snapshot.val().x, snapshot.val().y + 1000);
                 }
             });
         //わからないから誰か書き換えて
@@ -154,94 +161,154 @@ phina.define('GameScene', {
                     shape.setInteractive(false);
                 }
             }
-            //ドラック時処理
+        //ドラック時処理
         //データベースの位置を書き換える
-        back.on('pointmove', function (e) {
-            if (id1 == 0 || id1 == ID) {
-                if(self.serect == this){                 
-                    back.x += e.pointer.dx;
+            back.on('pointmove', function (e) {
+                if (id1 == 0 || id1 == ID) {
+                    if(self.serect == this){                 
+                        back.x += e.pointer.dx;
+                        // 画面の制限 x
                         if (back.left < 0) {
                             back.x -= back.left;
                         } else if (self.width < back.right) {
                             back.x += self.width - back.right;
                         }
                         back.y += e.pointer.dy;
+                        // 画面の制限 y
                         if (shape.top < 0) {
                             back.y -= back.top;
                         } else if (self.height < back.bottom) {
                             back.y += self.height - back.bottom;
                         }
-                    if (Collision.testRectRect(back, hand)) {
-                        pos.update({ belong: ID, x: back.x, y: back.y });
-                    } else {
-                        pos.update({ belong: 0, x: back.x, y: back.y });
+                        // 手札の判定
+                        if (shape.bottom > 760) {
+                            pos.update({ belong: ID, x: back.x, y: back.y });
+                        } else {
+                            pos.update({ belong: 0, x: back.x, y: back.y });
+                        }
                     }
                 }
-            }
-        });
-    //わからないから誰か書き換えて
-    //クリックしたカードを一番上に持ってくて、serectに代入
-        back.on('pointstart', function (e) {
-            //self.setRectInteraction();
-            self.serect = this;
-            this.remove();               
-            back.addChildTo(group);
-            start_X = e.pointer.x;
-            start_Y = e.pointer.y;
-        });
-    //離したらserectを空に
-        back.on('pointend', function (e) {
-            //self.setRectInteraction();
-            self.serect = null;
-            dir_X = e.pointer.x - start_X;
-            dir_Y = e.pointer.y - start_Y;
-            if((dir_X > -1) && (dir_X < 1))
-            {
-              if((dir_X > -1) && (dir_X < 1))
-              {            
-                this.remove();
-                shape.addChildTo(group);
-                show_back = false;
-                pos.update({ reverse: 0});                   
-              }
-            }    
-        });
-    //データベース書き換えた時の処理
-    //位置をデータベースから反映する
-        pos.on("value", function (snapshot) {
-            id1 = snapshot.val().belong;
-            if(show_back){
-                if(snapshot.val().x == back.x || snapshot.val().y == back.y)
+            });
+        //わからないから誰か書き換えて
+        //クリックしたカードを一番上に持ってくて、serectに代入
+            back.on('pointstart', function (e) {
+                //self.setRectInteraction();
+                self.serect = this;
+                this.remove();               
+                back.addChildTo(group);
+                start_X = e.pointer.x;
+                start_Y = e.pointer.y;
+            });
+        //離したらserectを空に
+            back.on('pointend', function (e) {
+                //self.setRectInteraction();
+                self.serect = null;
+                dir_X = e.pointer.x - start_X;
+                dir_Y = e.pointer.y - start_Y;
+                if((dir_X > -1) && (dir_X < 1))
                 {
-                    back.addChildTo(group)
-                }
-                if(snapshot.val().reverse == 0)
-                {
+                if((dir_Y > -1) && (dir_Y < 1))
+                {            
+                    this.remove();
                     shape.addChildTo(group);
-                    back.remove();
+                    show_back = false;
+                    pos.update({ reverse: 0});                   
+                }
+                }    
+            });
+        //データベースが書き換わった時の処理
+        //位置をデータベースから反映する
+        //裏の処理
+            pos.on("value", function (snapshot) {
+                id1 = snapshot.val().belong;
+                if(show_back){
+                    if(snapshot.val().x == back.x || snapshot.val().y == back.y)
+                    {
+                        back.addChildTo(group)
+                    }
+                    if(snapshot.val().reverse == 0)
+                    {
+                        shape.addChildTo(group);
+                        back.remove();
+                    }
+                }
+                if (id1 == 0 || id1 == ID) {
+                    back.setPosition(snapshot.val().x, snapshot.val().y);
+                } else {
+                    back.setPosition(snapshot.val().x, snapshot.val().y + 1000);
+                }
+            });
+        //わからないから誰か書き換えて
+        //選択しているカードをタッチ可能にする
+            back.update = function() {
+                if (self.serect == null || self.serect == this) {             
+                    back.setInteractive(true);
+                } else {
+                    back.setInteractive(false);
                 }
             }
-            back.setPosition(snapshot.val().x, snapshot.val().y);
-            if (id1 == 0 || id1 == ID) {
-                back.show();
-                back.setInteractive(true);
-            } else {
-                back.hide();
-                back.setInteractive(false);
-            }
-        });
-    //わからないから誰か書き換えて
-    //選択しているカードをタッチ可能にする
-        back.update = function() {
-            if (self.serect == null || self.serect == this) {             
-                back.setInteractive(true);
-            } else {
-                back.setInteractive(false);
-            }
-        }
         });
         
         this.group = group;
+
+    //frontボタン作成
+    //ボタンの枠のサイズを変更する方法がわかりません
+    Button({
+        width: 50,
+        height: 30,
+        text: "front",
+        fontSize: 14,
+    }
+    ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(13.05)).onpush = function () {
+        for (let p of poss) {
+            p.update({ reverse: 0 }); 
+        }
+    };    
+
+    //reverseボタン作成
+    //ボタンの枠のサイズを変更する方法がわかりません
+    Button({
+        width: 50,
+        height: 30,
+        text: "reverse",
+        fontSize: 14,
+    }
+    ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(13.70)).onpush = function () {
+        for (let p of poss) {
+            p.update({ reverse: 1 }); 
+        }
+    };    
+
+    //shuffleボタン作成
+    //ボタンの枠のサイズを変更する方法がわかりません
+    Button({
+        width: 50,
+        height: 30,
+        text: "shuffle",
+        fontSize: 14,
+    }
+    ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(14.35)).onpush = function () {
+        for (var i = poss.length-1; i>0; i--) {
+            var r = Math.floor(Math.random() * (i + 1));
+            var tmp = poss[i];
+            poss[i] = poss[r];
+            poss[r] = tmp;   
+        }
+    };    
+
+    //resetボタン作成
+    //ボタンの枠のサイズを変更する方法がわかりません
+    Button({
+        width: 50,
+        height: 30,
+        text: "reset",
+        fontSize: 14,
+    }
+    ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(15)).onpush = function () {
+        for (let p of poss) {
+            p.update({ x: 100, y: 100 });     
+        }
+    };    
 
     //returnボタン作成
     //ボタンの枠のサイズを変更する方法がわかりません
@@ -327,6 +394,7 @@ phina.define('TitleScene', {
 
 
 
+
         
     //タイトル画面で全ての画像をダウンロードします。解決策求む
         firebase.database().ref("/image").once('value').then(async function (snapshot) {
@@ -384,13 +452,28 @@ phina.define('MakeScene', {
                 x = 1.5;
                 y += 1.5;
             }
+            
             card.on('pointend', function (e) {
-                //self.setRectInteraction();
-                console.log(this._image.src);
-                const result = Object.keys(ASSETS.image).filter( (key) => {
-                    return ASSETS.image[key] === this._image.src;
+                var num = window.prompt("何枚使う？","0");
+                var label = phina.display.Label({ 
+                    text: num, 
+                    fontSize: 30, 
+                    fill: 'white',
+                    stroke: 'black',
+                    strokeWidth: 10,
                 });
-                cards.push(result);
+                //label.setPosition(this.gridX.center(), this.gridY.center());
+                label.addChildTo(this);
+                
+                
+                for(var i = 0; i< num; i++){
+                    //self.setRectInteraction();
+                    console.log(this._image.src);
+                    const result = Object.keys(ASSETS.image).filter( (key)  => {
+                        return ASSETS.image[key] === this._image.src;
+                    });
+                    cards.push(result);
+                }
             });
         }
         
@@ -409,7 +492,7 @@ phina.define('MakeScene', {
             text: "make",
             fontSize: 30,
         }
-        ).addChildTo(self).setPosition(self.gridX.span(4.5), self.gridY.span(15)).onpush = function () {
+        ).addChildTo(self).setPosition(self.gridX.span(5), self.gridY.span(15)).onpush = function () {
         //部屋名    
             var myroom = firebase.database().ref("/room/").push({
                 name: "room"+rnd
