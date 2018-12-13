@@ -437,7 +437,7 @@ phina.define('MakeScene', {
 
     //選ぶためにカードを全部表示していく。
     //選ばれたカードは自分の画像を表示用の配列に入れます。
-        var cards = [];
+        var cards = [];           
         var x = 1.5;
         var y = 1.5;
         for ( a in ASSETS.image) {
@@ -452,9 +452,9 @@ phina.define('MakeScene', {
                 x = 1.5;
                 y += 1.5;
             }
-            
+            let num = 0;
             card.on('pointend', function (e) {
-                var num = window.prompt("何枚使う？","0");
+                num = num + 1;
                 var label = phina.display.Label({ 
                     text: num, 
                     fontSize: 30, 
