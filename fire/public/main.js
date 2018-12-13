@@ -54,7 +54,7 @@ phina.define('GameScene', {
             }
             var back = phina.display.Sprite(back_image);
             var id1;
-            if(snapshot.val().reverse)
+            if(snapshot.val().reverse == 0)
             {
                 shape.addChildTo(group);
                 shape.setInteractive(true);
@@ -421,7 +421,7 @@ phina.define('MakeScene', {
                     img: cards[i][0],
                     x: 100,
                     y: 100,
-                    reverse: 0
+                    reverse: 1
                 });
             }
             var param = { room: myroom };
