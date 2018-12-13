@@ -53,7 +53,7 @@ phina.define('GameScene', {
             }
             var back = phina.display.Sprite(back_image);
             var id1;
-            if(snapshot.val().reverse)
+            if(snapshot.val().reverse == 0)
             {
                 shape.addChildTo(group);
                 shape.setInteractive(true);
@@ -116,9 +116,9 @@ phina.define('GameScene', {
                 self.serect = null;
                 dir_X = e.pointer.x - start_X;
                 dir_Y = e.pointer.y - start_Y;
-                if((dir_X > -0.01) && (dir_X < 0.01))
+                if((dir_X > -1) && (dir_X < 1))
                 {
-                  if((dir_X > -0.01) && (dir_X < 0.01))
+                  if((dir_Y > -1) && (dir_Y < 1))
                   {            
                     back.addChildTo(group);
                     this.remove();
@@ -132,7 +132,7 @@ phina.define('GameScene', {
         //表の処理
             pos.on("value", function (snapshot) {
                 if(!show_back){
-                    if(snapshot.val().x == shape.x || snapshot.val().y == shape.y)
+                    if(snapshot.val().x == shape.x - snapshot.val().x || snapshot.val().y == shape.y)
                     {
                         shape.addChildTo(group)
                     }
@@ -205,9 +205,9 @@ phina.define('GameScene', {
                 self.serect = null;
                 dir_X = e.pointer.x - start_X;
                 dir_Y = e.pointer.y - start_Y;
-                if((dir_X > -0.01) && (dir_X < 0.01))
+                if((dir_X > -1) && (dir_X < 1))
                 {
-                if((dir_X > -0.01) && (dir_X < 0.01))
+                if((dir_Y > -1) && (dir_Y < 1))
                 {            
                     this.remove();
                     shape.addChildTo(group);
@@ -328,6 +328,7 @@ phina.define('GameScene', {
             }
             self.exit('Title');
         };
+
 
 
     //ウィンドウ消した時の処理
@@ -504,7 +505,7 @@ phina.define('MakeScene', {
                     img: cards[i][0],
                     x: 100,
                     y: 100,
-                    reverse: 0
+                    reverse: 1
                 });
             }
             var param = { room: myroom };
