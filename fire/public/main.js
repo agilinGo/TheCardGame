@@ -110,9 +110,9 @@ phina.define('GameScene', {
                 self.serect = null;
                 dir_X = e.pointer.x - start_X;
                 dir_Y = e.pointer.y - start_Y;
-                if((dir_X > -0.01) && (dir_X < 0.01))
+                if((dir_X > -1) && (dir_X < 1))
                 {
-                  if((dir_X > -0.01) && (dir_X < 0.01))
+                  if((dir_X > -1) && (dir_X < 1))
                   {            
                     back.addChildTo(group);
                     this.remove();
@@ -125,7 +125,7 @@ phina.define('GameScene', {
         //位置をデータベースから反映する
             pos.on("value", function (snapshot) {
                 if(!show_back){
-                    if(snapshot.val().x == shape.x || snapshot.val().y == shape.y)
+                    if(snapshot.val().x == shape.x - snapshot.val().x || snapshot.val().y == shape.y)
                     {
                         shape.addChildTo(group)
                     }
@@ -195,9 +195,9 @@ phina.define('GameScene', {
             self.serect = null;
             dir_X = e.pointer.x - start_X;
             dir_Y = e.pointer.y - start_Y;
-            if((dir_X > -0.01) && (dir_X < 0.01))
+            if((dir_X > -1) && (dir_X < 1))
             {
-              if((dir_X > -0.01) && (dir_X < 0.01))
+              if((dir_X > -1) && (dir_X < 1))
               {            
                 this.remove();
                 shape.addChildTo(group);
@@ -261,6 +261,7 @@ phina.define('GameScene', {
             }
             self.exit('Title');
         };
+
 
 
     //ウィンドウ消した時の処理
