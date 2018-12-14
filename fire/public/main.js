@@ -132,7 +132,7 @@ phina.define('GameScene', {
         //表の処理
             pos.on("value", function (snapshot) {
                 if(!show_back){
-                    if(snapshot.val().x == shape.x - snapshot.val().x || snapshot.val().y == shape.y)
+                    if(snapshot.val().x == shape.x || snapshot.val().y == shape.y)
                     {
                         shape.addChildTo(group)
                     }
