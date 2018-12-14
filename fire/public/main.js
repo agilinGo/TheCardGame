@@ -439,7 +439,6 @@ phina.define('MakeScene', {
             }
             
             card.on('pointend', function (e) {
-                var num = window.prompt("何枚使う？","0");
                 var label = phina.display.Label({ 
                     text: num, 
                     fontSize: 30, 
