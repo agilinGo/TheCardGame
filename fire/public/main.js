@@ -6,7 +6,7 @@ let ASSETS = {
     },
 };
 
-//ゲームシーン=================================================================
+//ゲームシーン=========================================================================================================
 phina.define('GameScene', {
     superClass: 'phina.display.DisplayScene',
     init: function (param) {
@@ -326,9 +326,6 @@ phina.define('GameScene', {
             }
             self.exit('Title');
         };
-
-
-
     //ウィンドウ消した時の処理
         window.onbeforeunload = function () {
         //ユーザを消して手札を解放する
@@ -342,12 +339,9 @@ phina.define('GameScene', {
             }
         }
     },
-
-    update: function () {
-    },
 });
 
-//タイトルシーン=================================================================
+//タイトルシーン=========================================================================================================
 phina.define('TitleScene', {
     superClass: 'phina.display.DisplayScene',
     init: function () {
@@ -360,18 +354,18 @@ phina.define('TitleScene', {
         shape.addChildTo(this);
     
         var bool = false;   //画像のロードが終わったか確認用。つまりゴミ
-    //ボタン
+    //部屋に入る
         Button({
-            text: "enter",
-            fontSize: 60,
+            text: "部屋に入る",
+            fontSize: 30,
         }
         ).addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(10)).onpush = function () {
             self.exit('Room');
         };
-
+    //部屋を作る
         var make = Button({
-            text: "make",
-            fontSize: 60,
+            text: "部屋を作る",
+            fontSize: 30,
             fill: "gray",
         });
         make.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(12)).onpush = function () {
@@ -380,19 +374,14 @@ phina.define('TitleScene', {
                 self.exit('Make');
             }
         };
-    
+    //カードを作る
         var card = Button({
-            text: "card",
-            fontSize: 60,
+            text: "カードを作る",
+            fontSize: 30,
         });
         card.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(14)).onpush = function () {
             window.location.href = 'card_make/index.html';
         };
-
-
-
-
-        
     //タイトル画面で全ての画像をダウンロードします。解決策求む
         firebase.database().ref("/image").once('value').then(async function (snapshot) {
             const snapval = snapshot.val();
@@ -423,15 +412,15 @@ phina.define('TitleScene', {
     }
 });
 
-//ルーム作成シーン=================================================================
+//ルーム作成シーン=========================================================================================================
 phina.define('MakeScene', {
     superClass: 'phina.display.DisplayScene',
     init: function () {
         this.superInit();
         this.backgroundColor = 'lightblue';
-        self = this;
-        var rnd = Math.round(Math.random() * 100000);
-
+        var self = this;
+        var nonDrag = true;
+        var group = DisplayElement().addChildTo(this); //ボタンをグループ化
     //選ぶためにカードを全部表示していく。
     //選ばれたカードは自分の画像を表示用の配列に入れます。
         var cards = [];           
@@ -440,10 +429,9 @@ phina.define('MakeScene', {
         for ( a in ASSETS.image) {
             if (a == "title" || a == "bk0.png") {
                 continue;
-
             }
             var card = phina.display.Sprite(a);
-            card.addChildTo(self).setInteractive(true).setPosition(self.gridX.span(x), self.gridY.span(y));
+            card.addChildTo(group).setInteractive(true).setPosition(self.gridX.span(x), self.gridY.span(y));
             x += 1.5;
             if (x >= 16){
                 x = 1.5;
@@ -451,48 +439,48 @@ phina.define('MakeScene', {
             }
             let num = 0;
             card.on('pointend', function (e) {
-                num = num + 1;
-                var label = phina.display.Label({ 
-                    text: num, 
-                    fontSize: 30, 
-                    fill: 'white',
-                    stroke: 'black',
-                    strokeWidth: 10,
-                });
-                //label.setPosition(this.gridX.center(), this.gridY.center());
-                label.addChildTo(this);
-                console.log(this._image.src);
-                const result = Object.keys(ASSETS.image).filter( (key)  => {
-                return ASSETS.image[key] === this._image.src;
-                });
-                cards.push(result);
-                
+                if (nonDrag) {
+                    num = num + 1;
+                    var label = phina.display.Label({ 
+                        text: num, 
+                        fontSize: 30, 
+                        fill: 'white',
+                        stroke: 'black',
+                        strokeWidth: 10,
+                    });
+                    label.addChildTo(this);
+                    console.log(this._image.src);
+                    const result = Object.keys(ASSETS.image).filter( (key)  => {
+                    return ASSETS.image[key] === this._image.src;
+                    });
+                    cards.push(result);
+                }
+                nonDrag = true;
+            });
+            card.on('pointmove', function (e) {
+                nonDrag = false;
+                group.y += e.pointer.dy;
             });
         }
-        
-    //ボタン
     //backボタン作成
         Button({
-            text: "back",
+            text: "戻る",
             fontSize: 30,
         }
         ).addChildTo(this).setPosition(this.gridX.span(4.5), this.gridY.span(15)).onpush = function () {
             self.exit('Title');
         };
-
     //押されたらデータベースに部屋情報を書き込む
         Button({
-            text: "make",
+            text: "部屋を作る",
             fontSize: 30,
-        }
-        ).addChildTo(self).setPosition(self.gridX.span(11), self.gridY.span(15)).onpush = function () {
-        //部屋名
+        }).addChildTo(self).setPosition(self.gridX.span(11), self.gridY.span(15)).onpush = function () {
+        //部屋名入力
             var name = window.prompt("ルーム名","");
-
             var myroom = firebase.database().ref("/room/").push({
                 name: name
             });
-        //カード
+        //カードの情報書き込み
             for (i in cards) {
                 myroom.child("/cards/").ref.push({
                     belong: 0,
@@ -509,7 +497,7 @@ phina.define('MakeScene', {
     }
 });
 
-//ルーム選択シーン=================================================================
+//ルーム選択シーン=========================================================================================================
 phina.define('RoomScene', {
     superClass: 'phina.display.DisplayScene',
     init: function () {
@@ -583,7 +571,7 @@ phina.define('RoomScene', {
         Button({
             width: 150,
             height: 60,
-            text: "back",
+            text: "戻る",
             fontSize: 20,
             fill:  "pink",
         }
@@ -594,7 +582,7 @@ phina.define('RoomScene', {
     }
 });
 
-//メイン処理=================================================================
+//メイン処理=========================================================================================================
 phina.main(function () {
     var app = GameApp({
         startLabel: 'Title',
@@ -614,10 +602,6 @@ phina.main(function () {
             {
                 className: 'MakeScene',
                 label: 'Make',
-            },
-            {
-                className: 'MyLoadingScene',
-                label: 'Load',
             },
         ],
         assets: ASSETS,
