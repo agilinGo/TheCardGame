@@ -53,7 +53,7 @@ phina.define('GameScene', {
             }
             var back = phina.display.Sprite(back_image);
             var id1;
-            if(snapshot.val().reverse)
+            if(snapshot.val().reverse == 0)
             {
                 shape.addChildTo(group);
                 shape.setInteractive(true);
@@ -116,9 +116,9 @@ phina.define('GameScene', {
                 self.serect = null;
                 dir_X = e.pointer.x - start_X;
                 dir_Y = e.pointer.y - start_Y;
-                if((dir_X > -0.01) && (dir_X < 0.01))
+                if((dir_X > -3) && (dir_X < 3))
                 {
-                  if((dir_X > -0.01) && (dir_X < 0.01))
+                  if((dir_Y > -3) && (dir_Y < 3))
                   {            
                     back.addChildTo(group);
                     this.remove();
@@ -132,7 +132,7 @@ phina.define('GameScene', {
         //表の処理
             pos.on("value", function (snapshot) {
                 if(!show_back){
-                    if(snapshot.val().x == shape.x || snapshot.val().y == shape.y)
+                    if(snapshot.val().x == shape.x - snapshot.val().x || snapshot.val().y == shape.y)
                     {
                         shape.addChildTo(group)
                     }
@@ -205,15 +205,15 @@ phina.define('GameScene', {
                 self.serect = null;
                 dir_X = e.pointer.x - start_X;
                 dir_Y = e.pointer.y - start_Y;
-                if((dir_X > -0.01) && (dir_X < 0.01))
+                if((dir_X > -3) && (dir_X < 3))
                 {
-                if((dir_X > -0.01) && (dir_X < 0.01))
-                {            
-                    this.remove();
-                    shape.addChildTo(group);
-                    show_back = false;
-                    pos.update({ reverse: 0});                   
-                }
+                    if((dir_Y > -3) && (dir_Y < 3))
+                    {            
+                        this.remove();
+                        shape.addChildTo(group);
+                        show_back = false;
+                        pos.update({ reverse: 0});                   
+                    }
                 }    
             });
         //データベースが書き換わった時の処理
@@ -251,8 +251,20 @@ phina.define('GameScene', {
         
         this.group = group;
 
+    //frontボタン作成
+    Button({
+        width: 50,
+        height: 30,
+        text: "front",
+        fontSize: 14,
+    }
+    ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(13.05)).onpush = function () {
+        for (let p of poss) {
+            p.update({ reverse: 0 }); 
+        }
+    };    
+
     //reverseボタン作成
-    //ボタンの枠のサイズを変更する方法がわかりません
     Button({
         width: 50,
         height: 30,
@@ -266,7 +278,6 @@ phina.define('GameScene', {
     };    
 
     //shuffleボタン作成
-    //ボタンの枠のサイズを変更する方法がわかりません
     Button({
         width: 50,
         height: 30,
@@ -274,6 +285,9 @@ phina.define('GameScene', {
         fontSize: 14,
     }
     ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(14.35)).onpush = function () {
+        for (let p of poss) {
+            p.update({ belong: 0, x: 100, y: 100 });     
+        }
         for (var i = poss.length-1; i>0; i--) {
             var r = Math.floor(Math.random() * (i + 1));
             var tmp = poss[i];
@@ -283,7 +297,6 @@ phina.define('GameScene', {
     };    
 
     //resetボタン作成
-    //ボタンの枠のサイズを変更する方法がわかりません
     Button({
         width: 50,
         height: 30,
@@ -292,16 +305,15 @@ phina.define('GameScene', {
     }
     ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(15)).onpush = function () {
         for (let p of poss) {
-            p.update({ x: 100, y: 100 });     
+            p.update({ belong: 0, x: 100, y: 100 });     
         }
     };    
 
-    //returnボタン作成
-    //ボタンの枠のサイズを変更する方法がわかりません
+    //backボタン作成
         Button({
             width: 50,
             height: 30,
-            text: "return",
+            text: "back",
             fontSize: 14,
         }
         ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(15.65)).onpush = function () {
@@ -314,6 +326,7 @@ phina.define('GameScene', {
             }
             self.exit('Title');
         };
+
 
 
     //ウィンドウ消した時の処理
@@ -367,7 +380,6 @@ phina.define('TitleScene', {
                 self.exit('Make');
             }
         };
-
     
         var card = Button({
             text: "card",
@@ -422,7 +434,7 @@ phina.define('MakeScene', {
 
     //選ぶためにカードを全部表示していく。
     //選ばれたカードは自分の画像を表示用の配列に入れます。
-        var cards = [];
+        var cards = [];           
         var x = 1.5;
         var y = 1.5;
         for ( a in ASSETS.image) {
@@ -437,8 +449,9 @@ phina.define('MakeScene', {
                 x = 1.5;
                 y += 1.5;
             }
-            
+            let num = 0;
             card.on('pointend', function (e) {
+                num = num + 1;
                 var label = phina.display.Label({ 
                     text: num, 
                     fontSize: 30, 
@@ -448,26 +461,22 @@ phina.define('MakeScene', {
                 });
                 //label.setPosition(this.gridX.center(), this.gridY.center());
                 label.addChildTo(this);
+                console.log(this._image.src);
+                const result = Object.keys(ASSETS.image).filter( (key)  => {
+                return ASSETS.image[key] === this._image.src;
+                });
+                cards.push(result);
                 
-                
-                for(var i = 0; i< num; i++){
-                    //self.setRectInteraction();
-                    console.log(this._image.src);
-                    const result = Object.keys(ASSETS.image).filter( (key)  => {
-                        return ASSETS.image[key] === this._image.src;
-                    });
-                    cards.push(result);
-                }
             });
         }
         
     //ボタン
-    //returnボタン作成
+    //backボタン作成
         Button({
-            text: "return",
+            text: "back",
             fontSize: 30,
         }
-        ).addChildTo(this).setPosition(this.gridX.span(11), this.gridY.span(15)).onpush = function () {
+        ).addChildTo(this).setPosition(this.gridX.span(4.5), this.gridY.span(15)).onpush = function () {
             self.exit('Title');
         };
 
@@ -476,9 +485,10 @@ phina.define('MakeScene', {
             text: "make",
             fontSize: 30,
         }
-        ).addChildTo(self).setPosition(self.gridX.span(5), self.gridY.span(15)).onpush = function () {
+        ).addChildTo(self).setPosition(self.gridX.span(11), self.gridY.span(15)).onpush = function () {
         //部屋名
             var name = window.prompt("ルーム名","");
+
             var myroom = firebase.database().ref("/room/").push({
                 name: name
             });
@@ -490,7 +500,7 @@ phina.define('MakeScene', {
                     img: cards[i][0],
                     x: 100,
                     y: 100,
-                    reverse: 0
+                    reverse: 1
                 });
             }
             var param = { room: myroom };
@@ -507,17 +517,25 @@ phina.define('RoomScene', {
         this.backgroundColor = 'lightblue';
         const self = this;
         var group = DisplayElement().addChildTo(this); //ボタンをグループ化
-        var i = 2;
+        var i = 3;
+        var j = 3;
         var sel = false;    //１度しかボタンを押させないため。
         var nonDrag = true;
     //部屋ごとにボタンを作る。
         firebase.database().ref("/room").on("child_added", function (snapshot) {
             var name = snapshot.val().name;
             var roombtn = Button({
+                width: 150,
+                height: 60,
                 text: name,
-                fontSize: 30,
+                fontSize: 20,
             });
-            roombtn.addChildTo(group).setPosition(self.gridX.center(), self.gridY.span(i));
+            roombtn.addChildTo(group).setPosition(self.gridX.span(i), self.gridY.span(j));
+            i += 5
+            if(i >= 15) {
+                i = 3;
+                j += 1.5;
+            }
             roombtn.on('pointend', function (e) {
                 if (!sel && nonDrag) {
                     this.fill = "pink";
@@ -558,8 +576,20 @@ phina.define('RoomScene', {
                 nonDrag = false;
                 group.y += e.pointer.dy;
             });
-            i = i + 2;
         });
+
+        //ボタン
+        //backボタン作成
+        Button({
+            width: 150,
+            height: 60,
+            text: "back",
+            fontSize: 20,
+            fill:  "pink",
+        }
+        ).addChildTo(this).setPosition(this.gridX.span(3), this.gridY.span(1.5)).onpush = function () {
+            self.exit('Title');
+        };
 
     }
 });
