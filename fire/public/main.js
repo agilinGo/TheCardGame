@@ -116,9 +116,9 @@ phina.define('GameScene', {
                 self.serect = null;
                 dir_X = e.pointer.x - start_X;
                 dir_Y = e.pointer.y - start_Y;
-                if((dir_X > -1) && (dir_X < 1))
+                if((dir_X > -3) && (dir_X < 3))
                 {
-                  if((dir_Y > -1) && (dir_Y < 1))
+                  if((dir_Y > -3) && (dir_Y < 3))
                   {            
                     back.addChildTo(group);
                     this.remove();
@@ -132,7 +132,7 @@ phina.define('GameScene', {
         //表の処理
             pos.on("value", function (snapshot) {
                 if(!show_back){
-                    if(snapshot.val().x == shape.x - snapshot.val().x || snapshot.val().y == shape.y)
+                    if(snapshot.val().x == shape.x || snapshot.val().y == shape.y)
                     {
                         shape.addChildTo(group)
                     }
@@ -205,15 +205,15 @@ phina.define('GameScene', {
                 self.serect = null;
                 dir_X = e.pointer.x - start_X;
                 dir_Y = e.pointer.y - start_Y;
-                if((dir_X > -1) && (dir_X < 1))
+                if((dir_X > -3) && (dir_X < 3))
                 {
-                if((dir_Y > -1) && (dir_Y < 1))
-                {            
-                    this.remove();
-                    shape.addChildTo(group);
-                    show_back = false;
-                    pos.update({ reverse: 0});                   
-                }
+                    if((dir_Y > -3) && (dir_Y < 3))
+                    {            
+                        this.remove();
+                        shape.addChildTo(group);
+                        show_back = false;
+                        pos.update({ reverse: 0});                   
+                    }
                 }    
             });
         //データベースが書き換わった時の処理
