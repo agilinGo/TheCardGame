@@ -81,17 +81,14 @@ window.addEventListener('load', () => {
 	canvas.addEventListener("touchstart",function(e){
 		e.preventDefault();
 		var rect = e.target.getBoundingClientRect();
-		context.lineWidth = document.getElementById("lineWidth").value;
-		context.globalAlpha = document.getElementById("alpha").value/100;
-		undoImage = context.getImageData(0, 0,canvas.width,canvas.height);
+		// context.lineWidth = document.getElementById("lineWidth").value;
+		// context.globalAlpha = document.getElementById("alpha").value/100;
+		// undoImage = context.getImageData(0, 0,canvas.width,canvas.height);
 		for(var i=0;i<finger.length;i++){
 			finger[i].x1 = e.touches[i].clientX-rect.left;
 			finger[i].y1 = e.touches[i].clientY-rect.top;
-
-
-
 		}
-	});
+    });
 
 	//タッチして動き出したら描画
 	canvas.addEventListener("touchmove",function(e){
@@ -110,6 +107,7 @@ window.addEventListener('load', () => {
 
 		}
 	});
+    
     
     /*
 	//線の太さの値を変える
