@@ -285,14 +285,26 @@ phina.define('GameScene', {
         fontSize: 14,
     }
     ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(14.35)).onpush = function () {
-        for (let p of poss) {
-            p.update({ belong: 0, x: 100, y: 100 });     
-        } 
+        for (var i = poss.length-1; i>0; i--) {
+            var r = Math.floor(Math.random() * (poss.length-1));
+            var tmp = poss[i];
+            poss[i] = poss[r];
+            poss[r] = tmp;
+        }
+        /*
+        var r = Math.floor(Math.random() * (poss.length-1));
+        self.group.children.swap(poss.length-1,r);
         for (var i=0; i<100; i++) {
             var r1 = Math.floor(Math.random() * (poss.length-1));
             var r2 = Math.floor(Math.random() * (poss.length-1));
-            self.group.children.swap(r1,r2);
+            var tmp = poss[r1];
+            poss[r1] = poss[r2];
+            poss[r2] = tmp;
         }
+        */
+        for (let p of poss) {
+            p.update({ belong: 0, x: 100, y: 100 });     
+        } 
     };    
 
     //カードを集めるボタン作成
