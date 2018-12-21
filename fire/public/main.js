@@ -260,7 +260,7 @@ phina.define('GameScene', {
     }
     ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(13.05)).onpush = function () {
         for (let p of poss) {
-            p.update({ reverse: 0 }); 
+            p.update({ belong: 0, reverse: 0 }); 
         }
     };    
 
@@ -273,7 +273,7 @@ phina.define('GameScene', {
     }
     ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(13.70)).onpush = function () {
         for (let p of poss) {
-            p.update({ reverse: 1 }); 
+            p.update({ belong: 0, reverse: 1 }); 
         }
     };    
 
