@@ -253,7 +253,7 @@ phina.define('GameScene', {
 
     //表にするボタン作成
     Button({
-        width: 50,
+        width: 70,
         height: 30,
         text: "表にする",
         fontSize: 14,
@@ -266,7 +266,7 @@ phina.define('GameScene', {
 
     //裏にするボタン作成
     Button({
-        width: 50,
+        width: 70,
         height: 30,
         text: "裏にする",
         fontSize: 14,
@@ -279,7 +279,7 @@ phina.define('GameScene', {
 
     //シャッフルするボタン作成
     Button({
-        width: 50,
+        width: 70,
         height: 30,
         text: "シャッフルする",
         fontSize: 14,
@@ -297,7 +297,7 @@ phina.define('GameScene', {
 
     //カードを集めるボタン作成
     Button({
-        width: 50,
+        width: 70,
         height: 30,
         text: "カードを集める",
         fontSize: 14,
@@ -310,7 +310,7 @@ phina.define('GameScene', {
 
     //戻るボタン作成
         Button({
-            width: 50,
+            width: 70,
             height: 30,
             text: "戻る",
             fontSize: 14,
