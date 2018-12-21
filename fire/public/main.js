@@ -251,11 +251,11 @@ phina.define('GameScene', {
         
         this.group = group;
 
-    //frontボタン作成
+    //表にするボタン作成
     Button({
         width: 50,
         height: 30,
-        text: "front",
+        text: "表にする",
         fontSize: 14,
     }
     ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(13.05)).onpush = function () {
@@ -264,11 +264,11 @@ phina.define('GameScene', {
         }
     };    
 
-    //reverseボタン作成
+    //裏にするボタン作成
     Button({
         width: 50,
         height: 30,
-        text: "reverse",
+        text: "裏にする",
         fontSize: 14,
     }
     ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(13.70)).onpush = function () {
@@ -277,11 +277,11 @@ phina.define('GameScene', {
         }
     };    
 
-    //shuffleボタン作成
+    //シャッフルするボタン作成
     Button({
         width: 50,
         height: 30,
-        text: "shuffle",
+        text: "シャッフルする",
         fontSize: 14,
     }
     ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(14.35)).onpush = function () {
@@ -295,11 +295,11 @@ phina.define('GameScene', {
         }
     };    
 
-    //resetボタン作成
+    //カードを集めるボタン作成
     Button({
         width: 50,
         height: 30,
-        text: "reset",
+        text: "カードを集める",
         fontSize: 14,
     }
     ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(15)).onpush = function () {
@@ -308,11 +308,11 @@ phina.define('GameScene', {
         }
     };    
 
-    //backボタン作成
+    //戻るボタン作成
         Button({
             width: 50,
             height: 30,
-            text: "back",
+            text: "戻る",
             fontSize: 14,
         }
         ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(15.65)).onpush = function () {
