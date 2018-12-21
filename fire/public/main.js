@@ -363,7 +363,7 @@ phina.define('TitleScene', {
         };
     //部屋を作る
         var make = Button({
-            text: "部屋を作る",
+            text: "ロード中",
             fontSize: 30,
             fill: "gray",
         });
@@ -405,9 +405,11 @@ phina.define('TitleScene', {
             loader.on('load', function() {
                 console.log("load");
                 bool = true;
-                make.fill = "MediumTurquoise"
+                make.fill = "MediumTurquoise";
+                make.text = "部屋を作る"                
             });                     
-        });
+        });/*
+        "*/
     }
 });
 
@@ -416,15 +418,18 @@ phina.define('MakeScene', {
     superClass: 'phina.display.DisplayScene',
     init: function () {
         this.superInit();
-        this.backgroundColor = 'lightblue';
-        var self = this;
+        this.backgroundColor = 'lightblue';        
+        var self = this;        
         var nonDrag = true;
         var group = DisplayElement().addChildTo(this); //ボタンをグループ化
     //選ぶためにカードを全部表示していく。
     //選ばれたカードは自分の画像を表示用の配列に入れます。
+        var exa = phina.display.Label({ text: "遊びたいカードをえらんでね" });
+        exa.addChildTo(this);
+        exa.setPosition(320, 80);
         var cards = [];           
         var x = 1.5;
-        var y = 1.5;
+        var y = 3.0;
         for ( a in ASSETS.image) {
             if (a == "title" || a == "bk0.png") {
                 continue;
