@@ -253,12 +253,12 @@ phina.define('GameScene', {
 
     //表にするボタン作成
     Button({
-        width: 70,
+        width: 100,
         height: 30,
         text: "表にする",
         fontSize: 14,
     }
-    ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(13.05)).onpush = function () {
+    ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(13.05)).onpush = function () {
         for (let p of poss) {
             p.update({ reverse: 0 }); 
         }
@@ -266,12 +266,12 @@ phina.define('GameScene', {
 
     //裏にするボタン作成
     Button({
-        width: 70,
+        width: 100,
         height: 30,
         text: "裏にする",
         fontSize: 14,
     }
-    ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(13.70)).onpush = function () {
+    ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(13.70)).onpush = function () {
         for (let p of poss) {
             p.update({ reverse: 1 }); 
         }
@@ -279,30 +279,30 @@ phina.define('GameScene', {
 
     //シャッフルするボタン作成
     Button({
-        width: 70,
+        width: 100,
         height: 30,
         text: "シャッフルする",
         fontSize: 14,
     }
-    ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(14.35)).onpush = function () {
+    ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(14.35)).onpush = function () {
+        for (let p of poss) {
+            p.update({ belong: 0, x: 100, y: 100 });     
+        } 
         for (var i=0; i<100; i++) {
             var r1 = Math.floor(Math.random() * (poss.length-1));
             var r2 = Math.floor(Math.random() * (poss.length-1));
             self.group.children.swap(r1,r2);
         }
-        for (let p of poss) {
-            p.update({ belong: 0, x: 100, y: 100 });     
-        }
     };    
 
     //カードを集めるボタン作成
     Button({
-        width: 70,
+        width: 100,
         height: 30,
         text: "カードを集める",
         fontSize: 14,
     }
-    ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(15)).onpush = function () {
+    ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(15)).onpush = function () {
         for (let p of poss) {
             p.update({ belong: 0, x: 100, y: 100 });     
         }
@@ -310,12 +310,12 @@ phina.define('GameScene', {
 
     //戻るボタン作成
         Button({
-            width: 70,
+            width: 100,
             height: 30,
             text: "戻る",
             fontSize: 14,
         }
-        ).addChildTo(this).setPosition(this.gridX.span(15.25), this.gridY.span(15.65)).onpush = function () {
+        ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(15.65)).onpush = function () {
             for (let p of poss) {
                 p.once('value').then(function (snapshot) {
                     if (snapshot.val().belong == ID) {
