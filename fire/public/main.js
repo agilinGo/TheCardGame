@@ -260,7 +260,7 @@ phina.define('GameScene', {
     }
     ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(13.05)).onpush = function () {
         for (let p of poss) {
-            p.update({ belong: 0, reverse: 0 }); 
+            p.update({ reverse: 0 }); 
         }
     };    
 
@@ -273,7 +273,7 @@ phina.define('GameScene', {
     }
     ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(13.70)).onpush = function () {
         for (let p of poss) {
-            p.update({ belong: 0, reverse: 1 }); 
+            p.update({ reverse: 1 }); 
         }
     };    
 
@@ -295,7 +295,7 @@ phina.define('GameScene', {
         */
         var r = Math.floor(Math.random() * (poss.length-1));
         self.group.children.swap(poss.length-1,r);
-        for (var i=0; i<100; i++) {
+        for (var i=0; i<1000; i++) {
             var r1 = Math.floor(Math.random() * (poss.length-1));
             var r2 = Math.floor(Math.random() * (poss.length-1));
             var tmp = poss[r1];
