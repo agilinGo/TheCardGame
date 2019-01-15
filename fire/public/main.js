@@ -90,9 +90,9 @@ phina.define('GameScene', {
                         // 手札の判定
                         if (shape.bottom > 760) {
                             hands.push(shape);
-                            console.log(hands);
-                            console.log(hands.length);
-                            console.log(hands.indexOf(shape));
+                            //console.log(hands);
+                            //console.log(hands.length);
+                            //console.log(hands.indexOf(shape));
                             
                             pos.update({ belong: ID, x: shape.x, y: shape.y });
                         } else {
@@ -387,12 +387,15 @@ phina.define('TitleScene', {
     
         var bool = false;   //画像のロードが終わったか確認用。つまりゴミ
     //部屋に入る
-        Button({
-            text: "部屋に入る",
+        var room = Button({
+            text: "ロード中",
             fontSize: 30,
-        }
-        ).addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(10)).onpush = function () {
-            self.exit('Room');
+            fill: "gray",
+        });
+        room.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(10)).onpush = function () {
+            if (bool) {
+                self.exit('Room');
+            }
         };
     //部屋を作る
         var make = Button({
@@ -401,7 +404,7 @@ phina.define('TitleScene', {
             fill: "gray",
         });
         make.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(12)).onpush = function () {
-            console.log(bool);
+            //console.log(bool);
             if (bool) {
                 self.exit('Make');
             }
@@ -410,6 +413,7 @@ phina.define('TitleScene', {
         var card = Button({
             text: "カードを作る",
             fontSize: 30,
+            fill: "DeepSkyBlue",
         });
         card.addChildTo(this).setPosition(this.gridX.center(), this.gridY.span(14)).onpush = function () {
             window.location.href = 'card_make/index.html';
@@ -430,16 +434,23 @@ phina.define('TitleScene', {
                 const path = x[0];
                 const url  = x[1];
                 ASSETS["image"][path] = url;
-                console.log(url);
+                //console.log(url);
             });
-            console.log(xs); 
+            //console.log(xs); 
             var loader = phina.asset.AssetLoader();
             loader.load(ASSETS);
             loader.on('load', function() {
-                console.log("load");
+                //console.log("load");
                 bool = true;
+<<<<<<< HEAD
+                room.fill = "DeepSkyBlue",
+                room.text = "部屋に入る" 
+                make.fill = "DeepSkyBlue"
+                make.text = "部屋を作る" 
+=======
                 make.fill = "MediumTurquoise";
                 make.text = "部屋を作る"                
+>>>>>>> 994a09dbcfcb77bcd68eaede09df0bd63dafca96
             });                     
         });/*
         "*/
@@ -486,7 +497,7 @@ phina.define('MakeScene', {
                         strokeWidth: 10,
                     });
                     label.addChildTo(this);
-                    console.log(this._image.src);
+                    //console.log(this._image.src);
                     const result = Object.keys(ASSETS.image).filter( (key)  => {
                     return ASSETS.image[key] === this._image.src;
                     });
@@ -582,13 +593,13 @@ phina.define('RoomScene', {
                             const path = x[0];
                             const url  = x[1];
                             ASSETS["image"][path] = url;
-                            console.log(url);
+                            //console.log(url);
                         });    
-                        console.log(xs); 
+                        //console.log(xs); 
                         var loader = phina.asset.AssetLoader();
                         loader.load(ASSETS);
                         loader.on('load', function() {
-                            console.log("load");
+                            //console.log("load");
                             self.exit('Game', param);
                         });                     
                     });
@@ -597,7 +608,7 @@ phina.define('RoomScene', {
             });
         //roomのボタンをドラッグ可能にする
             roombtn.on('pointmove', function (e) {
-                console.log("a");
+                //console.log("a");
                 nonDrag = false;
                 group.y += e.pointer.dy;
             });
