@@ -442,15 +442,11 @@ phina.define('TitleScene', {
             loader.on('load', function() {
                 //console.log("load");
                 bool = true;
-<<<<<<< HEAD
                 room.fill = "DeepSkyBlue",
                 room.text = "部屋に入る" 
                 make.fill = "DeepSkyBlue"
                 make.text = "部屋を作る" 
-=======
-                make.fill = "MediumTurquoise";
-                make.text = "部屋を作る"                
->>>>>>> 994a09dbcfcb77bcd68eaede09df0bd63dafca96
+
             });                     
         });/*
         "*/
