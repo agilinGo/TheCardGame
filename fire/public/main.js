@@ -253,38 +253,38 @@ phina.define('GameScene', {
 
     //表にするボタン作成
     Button({
-        width: 100,
-        height: 30,
+        width: 105,
+        height: 25,
         text: "表にする",
         fontSize: 14,
     }
-    ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(13.05)).onpush = function () {
+    ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(13)).onpush = function () {
         for (let p of poss) {
-            p.update({ belong: 0, reverse: 0 }); 
+            p.update({ reverse: 0 }); 
         }
     };    
 
     //裏にするボタン作成
     Button({
-        width: 100,
-        height: 30,
+        width: 105,
+        height: 25,
         text: "裏にする",
         fontSize: 14,
     }
-    ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(13.70)).onpush = function () {
+    ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(13.5)).onpush = function () {
         for (let p of poss) {
-            p.update({ belong: 0, reverse: 1 }); 
+            p.update({ reverse: 1 }); 
         }
     };    
 
     //シャッフルするボタン作成
     Button({
-        width: 100,
-        height: 30,
+        width: 105,
+        height: 25,
         text: "シャッフルする",
         fontSize: 14,
     }
-    ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(14.35)).onpush = function () {
+    ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(14)).onpush = function () {
         /*
         for (var i = poss.length-1; i>0; i--) {
             var r = Math.floor(Math.random() * (poss.length-1));
@@ -309,25 +309,45 @@ phina.define('GameScene', {
 
     //カードを集めるボタン作成
     Button({
-        width: 100,
-        height: 30,
+        width: 105,
+        height: 25,
         text: "カードを集める",
         fontSize: 14,
     }
-    ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(15)).onpush = function () {
+    ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(14.5)).onpush = function () {
         for (let p of poss) {
             p.update({ belong: 0, x: 100, y: 100 });     
         }
     };    
 
+    //カードを並べるボタン作成
+    Button({
+        width: 105,
+        height: 25,
+        text: "カードを並べる",
+        fontSize: 14,
+    }
+    ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(15)).onpush = function () {
+        var i = 60;
+        var j = 70;
+        for (let p of poss) {
+            if(i >= 610) {
+                i = 60;
+                j += 95;
+            }
+            p.update({ belong: 0, x: i, y: j });   
+            i += 75
+        } 
+    };
+
     //戻るボタン作成
         Button({
-            width: 100,
-            height: 30,
+            width: 105,
+            height: 25,
             text: "戻る",
             fontSize: 14,
         }
-        ).addChildTo(this).setPosition(this.gridX.span(14.5), this.gridY.span(15.65)).onpush = function () {
+        ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(15.5)).onpush = function () {
             for (let p of poss) {
                 p.once('value').then(function (snapshot) {
                     if (snapshot.val().belong == ID) {
@@ -337,6 +357,7 @@ phina.define('GameScene', {
             }
             self.exit('Title');
         };
+
     //ウィンドウ消した時の処理
         window.onbeforeunload = function () {
         //ユーザを消して手札を解放する
