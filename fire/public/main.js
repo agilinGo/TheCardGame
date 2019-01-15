@@ -271,7 +271,7 @@ phina.define('GameScene', {
         text: "裏にする",
         fontSize: 14,
     }
-    ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(13.5)).onpush = function () {
+    ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(13.52)).onpush = function () {
         for (let p of poss) {
             p.update({ reverse: 1 }); 
         }
@@ -284,7 +284,7 @@ phina.define('GameScene', {
         text: "シャッフルする",
         fontSize: 14,
     }
-    ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(14)).onpush = function () {
+    ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(14.04)).onpush = function () {
         /*
         for (var i = poss.length-1; i>0; i--) {
             var r = Math.floor(Math.random() * (poss.length-1));
@@ -314,7 +314,7 @@ phina.define('GameScene', {
         text: "カードを集める",
         fontSize: 14,
     }
-    ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(14.5)).onpush = function () {
+    ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(14.56)).onpush = function () {
         for (let p of poss) {
             p.update({ belong: 0, x: 100, y: 100 });     
         }
@@ -327,9 +327,9 @@ phina.define('GameScene', {
         text: "カードを並べる",
         fontSize: 14,
     }
-    ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(15)).onpush = function () {
+    ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(15.08)).onpush = function () {
         var i = 60;
-        var j = 70;
+        var j = 90;
         for (let p of poss) {
             if(i >= 610) {
                 i = 60;
@@ -347,7 +347,7 @@ phina.define('GameScene', {
             text: "戻る",
             fontSize: 14,
         }
-        ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(15.5)).onpush = function () {
+        ).addChildTo(this).setPosition(this.gridX.span(14.55), this.gridY.span(15.6)).onpush = function () {
             for (let p of poss) {
                 p.once('value').then(function (snapshot) {
                     if (snapshot.val().belong == ID) {
@@ -456,7 +456,7 @@ phina.define('MakeScene', {
     //選ぶためにカードを全部表示していく。
     //選ばれたカードは自分の画像を表示用の配列に入れます。
         var cards = [];           
-        var x = 1.5;
+        var x = 1.25;
         var y = 1.5;
         for ( a in ASSETS.image) {
             if (a == "title" || a == "bk0.png") {
@@ -466,7 +466,7 @@ phina.define('MakeScene', {
             card.addChildTo(group).setInteractive(true).setPosition(self.gridX.span(x), self.gridY.span(y));
             x += 1.5;
             if (x >= 16){
-                x = 1.5;
+                x = 1.25;
                 y += 1.5;
             }
             let num = 0;
